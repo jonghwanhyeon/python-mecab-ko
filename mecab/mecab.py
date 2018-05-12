@@ -26,7 +26,7 @@ def _extract_tag(node):
 class MeCabError(Exception):
     pass
 
-class MeCab:
+class MeCab: # APIs are inspried by KoNLPy
     def __init__(self):
         self.tagger = _mecab.Tagger('')
 
