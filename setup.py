@@ -140,8 +140,10 @@ setup(
     author_email='hyeon0145@gmail.com',
     url='https://github.com/hyeon0145/python-mecab-ko',
     description='A python binding for mecab-ko',
+    keywords='mecab mecab-ko',
     packages=find_packages(),
     ext_modules=extensions,
+    python_requires='>=3',
     install_requires=[
         'pybind11 ~= 2.0'
     ],
