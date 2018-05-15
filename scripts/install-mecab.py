@@ -2,11 +2,8 @@ import os
 import subprocess
 import sys
 
-# MECAB_KO_URL = 'https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-0.996-ko-0.9.2.tar.gz'
-# MECAB_KO_DIC_URL = 'https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-ko-dic-2.0.3-20170922.tar.gz'
-
-MECAB_KO_URL = 'http://localhost:8000/mecab-0.996-ko-0.9.2.tar.gz'
-MECAB_KO_DIC_URL = 'http://localhost:8000/mecab-ko-dic-2.0.3-20170922.tar.gz'
+MECAB_KO_URL = 'https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-0.996-ko-0.9.2.tar.gz'
+MECAB_KO_DIC_URL = 'https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-ko-dic-2.0.3-20170922.tar.gz'
 
 base_path = os.path.abspath(os.path.dirname(__file__))
 
