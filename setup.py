@@ -54,7 +54,9 @@ class get_mecab_library_directory:
 extensions = [
     Extension(
         name='_mecab',
-        sources=['mecab/pybind/_mecab.cpp'],
+        sources=[
+            'mecab/pybind/_mecab.cpp'
+        ],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
@@ -65,6 +67,9 @@ extensions = [
             'mecab',
         ],
         library_dirs=[
+            get_mecab_library_directory(),
+        ],
+        runtime_library_dirs=[
             get_mecab_library_directory(),
         ],
         language='c++',
