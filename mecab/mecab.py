@@ -1,4 +1,4 @@
-from . import _mecab
+import _mecab
 
 def _create_lattice(sentence):
     lattice = _mecab.Lattice()
