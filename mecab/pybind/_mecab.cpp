@@ -42,7 +42,7 @@ PYBIND11_MODULE(_mecab, m) {
     .def_readwrite("rpath", &MeCab::Node::rpath)
     .def_readwrite("lpath", &MeCab::Node::lpath)
     .def_property_readonly("surface", [](MeCab::Node &self) {
-      return static_cast<py::str>(PyUnicode_DecodeUTF8(self.surface, self.length, nullptr));
+      return std::string(self.surface, self.length);
     })
     .def_readonly("feature", &MeCab::Node::feature)
     .def_readwrite("id", &MeCab::Node::id)
