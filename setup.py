@@ -136,20 +136,31 @@ class BuildExtensionCommand(build_ext):
 setup(
     name='python-mecab-ko',
     version='1.0.0',
+    url='https://github.com/hyeon0145/python-mecab-ko',
     author='Jonghwan Hyeon',
     author_email='hyeon0145@gmail.com',
-    url='https://github.com/hyeon0145/python-mecab-ko',
     description='A python binding for mecab-ko',
+    license='BSD',
     keywords='mecab mecab-ko',
-    packages=find_packages(),
-    ext_modules=extensions,
-    python_requires='>=3',
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: BSD License',
+        'Natural Language :: Korean',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
+        'Topic :: Text Processing',
+        'Topic :: Text Processing :: Linguistic',
+    ],
+    zip_safe=False,
     install_requires=[
         'pybind11 ~= 2.0'
     ],
+    python_requires='>=3',
+    packages=find_packages(),
+    ext_modules=extensions,
     cmdclass={
         'install': InstallCommand,
         'build_ext': BuildExtensionCommand
     },
-    zip_safe=False,
 )
