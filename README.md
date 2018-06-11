@@ -8,7 +8,7 @@ A python binding for mecab-ko
 Using `pip`:
 
     # Use the -v option to check the progress of MeCab installation
-    pip install -v git+https://github.com/jonghwanhyeon/python-mecab-ko
+    pip install -v python-mecab-ko
 
 ## Usage
 
