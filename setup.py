@@ -158,6 +158,7 @@ setup(
     ],
     python_requires='>=3',
     packages=find_packages(),
+    data_files=[('scripts', ['scripts/install-mecab.py'])],
     ext_modules=extensions,
     cmdclass={
         'install': InstallCommand,
