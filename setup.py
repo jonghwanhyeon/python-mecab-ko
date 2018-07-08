@@ -141,7 +141,7 @@ setup(
     ],
     python_requires='>=3',
     packages=find_packages(),
-    data_files=[('scripts', ['scripts/install-mecab.py'])],
+    data_files=[('scripts', ['scripts/install-mecab-ko.py'])],
     ext_modules=[
         Extension(
             name='_mecab',
