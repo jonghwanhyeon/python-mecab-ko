@@ -118,7 +118,7 @@ class InstallCommand(install):
 
 setup(
     name='python-mecab-ko',
-    version='1.0.0',
+    version='1.0.1',
     url='https://github.com/hyeon0145/python-mecab-ko',
     author='Jonghwan Hyeon',
     author_email='hyeon0145@gmail.com',
