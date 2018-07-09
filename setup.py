@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import sys
 
@@ -70,14 +71,18 @@ class BuildExtensionCommand(build_ext):
 
 class InstallCommand(install):
     def run(self):
-        base_path = os.path.abspath(os.path.dirname(__file__))
+        if not shutil.which('mecab'):
+            self.install_mecab()
 
+        super().run()
+
+    def install_mecab(self):
+        base_path = os.path.abspath(os.path.dirname(__file__))
         scripts_directory = os.path.join(base_path, 'scripts')
         subprocess.check_call([sys.executable,
                                os.path.join(scripts_directory, 'install-mecab-ko.py')],
                               cwd=scripts_directory)
 
-        super().run()
 
 
 def lazy(func):
