@@ -10,42 +10,6 @@ from setuptools.command.build_ext import build_ext
 # Based on https://github.com/pybind/python_example
 
 
-def lazy(func):
-    class Decorator:
-        def __init__(self, *args, **kwargs):
-            self.args = args
-            self.kwargs = kwargs
-
-        def __str__(self):
-            return func(*self.args, **self.kwargs)
-
-        def __add__(self, other):
-            return str(self) + other
-
-        def __radd__(self, other):
-            return other + str(self)
-
-    return Decorator
-
-
-@lazy
-def get_pybind_include(user=False):
-    import pybind11
-    return pybind11.get_include(user)
-
-
-@lazy
-def get_mecab_include_directory():
-    return subprocess.check_output([
-        'mecab-config', '--inc-dir']).decode('utf-8').strip()
-
-
-@lazy
-def get_mecab_library_directory():
-    return subprocess.check_output([
-        'mecab-config', '--libs-only-L']).decode('utf-8').strip()
-
-
 class BuildExtensionCommand(build_ext):
     compiler_options = {
         'msvc': ['/EHsc'],
@@ -114,6 +78,42 @@ class InstallCommand(install):
                               cwd=scripts_directory)
 
         super().run()
+
+
+def lazy(func):
+    class Decorator:
+        def __init__(self, *args, **kwargs):
+            self.args = args
+            self.kwargs = kwargs
+
+        def __str__(self):
+            return func(*self.args, **self.kwargs)
+
+        def __add__(self, other):
+            return str(self) + other
+
+        def __radd__(self, other):
+            return other + str(self)
+
+    return Decorator
+
+
+@lazy
+def get_pybind_include(user=False):
+    import pybind11
+    return pybind11.get_include(user)
+
+
+@lazy
+def get_mecab_include_directory():
+    return subprocess.check_output([
+        'mecab-config', '--inc-dir']).decode('utf-8').strip()
+
+
+@lazy
+def get_mecab_library_directory():
+    return subprocess.check_output([
+        'mecab-config', '--libs-only-L']).decode('utf-8').strip()
 
 
 setup(
