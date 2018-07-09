@@ -54,21 +54,22 @@ def install(base):
     subprocess.check_call(['make', 'install'], cwd=path)
 
 
-print_title('Installing mecab-ko...')
-with TemporaryDirectory() as working_directory:
-    prepare(MECAB_KO_URL, base=working_directory)
-    configure('--prefix={}'.format(sys.prefix),
-              '--enable-utf8-only',
-              base=working_directory)
-    install(base=working_directory)
+if __name__ == '__main__':
+    print_title('Installing mecab-ko...')
+    with TemporaryDirectory() as working_directory:
+        prepare(MECAB_KO_URL, base=working_directory)
+        configure('--prefix={}'.format(sys.prefix),
+                  '--enable-utf8-only',
+                  base=working_directory)
+        install(base=working_directory)
 
-print_title('Installing mecab-ko-dic...')
-with TemporaryDirectory() as working_directory:
-    mecab_config_path = os.path.join(sys.prefix, 'bin', 'mecab-config')
+    print_title('Installing mecab-ko-dic...')
+    with TemporaryDirectory() as working_directory:
+        mecab_config_path = os.path.join(sys.prefix, 'bin', 'mecab-config')
 
-    prepare(MECAB_KO_DIC_URL, base=working_directory)
-    configure('--prefix={}'.format(sys.prefix),
-              '--with-charset=utf8',
-              '--with-mecab-config={}'.format(mecab_config_path),
-              base=working_directory)
-    install(base=working_directory)
+        prepare(MECAB_KO_DIC_URL, base=working_directory)
+        configure('--prefix={}'.format(sys.prefix),
+                  '--with-charset=utf8',
+                  '--with-mecab-config={}'.format(mecab_config_path),
+                  base=working_directory)
+        install(base=working_directory)
