@@ -3,6 +3,18 @@
 
 namespace py = pybind11;
 
+class Iterator {
+private:
+  const MeCab::Node *cursor;
+
+public:
+  Iterator(const MeCab::Node* cursor) : cursor(cursor) {}
+
+  const MeCab::Node& operator*() const { return *cursor; }
+  Iterator& operator++() { cursor = cursor->next; return *this; }
+  bool operator==(const Iterator& rhs) const { return cursor == rhs.cursor;}
+};
+
 void initialize_lattice(py::module &m) {
   // Parameters for MeCab::Lattice::request_type
   m.attr("MECAB_ONE_BEST") = 1;
@@ -128,5 +140,11 @@ void initialize_lattice(py::module &m) {
     .def("set_what", [](MeCab::Lattice &self, const char *text) {
       self.set_what(text);
     })
+    .def("__iter__", [](MeCab::Lattice &self) {
+      Iterator begin = Iterator(self.bos_node()->next); // beigin should point to the actual first element
+      Iterator end = Iterator(self.eos_node());
+
+      return py::make_iterator(begin, end);
+    }, py::keep_alive<0, 1>()) // 0 -> iterator, 1 -> self
   ;
 }

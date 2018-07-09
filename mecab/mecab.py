@@ -8,15 +8,6 @@ def _create_lattice(sentence):
 
     return lattice
 
-def _node_iter(node):
-    current_node = node
-    while current_node:
-        is_sentinel = current_node.stat in { _mecab.MECAB_BOS_NODE, _mecab.MECAB_EOS_NODE }
-        if not is_sentinel:
-            yield current_node
-
-        current_node = current_node.next
-
 
 def _extract_tag(node):
     # Reference: https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY
@@ -40,7 +31,7 @@ class MeCab:  # APIs are inspried by KoNLPy
 
         return [
             (node.surface, _extract_tag(node))
-            for node in _node_iter(lattice.bos_node())
+            for node in lattice
         ]
 
     def morphs(self, sentence):
