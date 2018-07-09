@@ -1,8 +1,9 @@
 import _mecab
 
+
 def _create_lattice(sentence):
     lattice = _mecab.Lattice()
-    lattice.add_request_type(_mecab.MECAB_ALLOCATE_SENTENCE) # Essential
+    lattice.add_request_type(_mecab.MECAB_ALLOCATE_SENTENCE)  # Required
     lattice.set_sentence(sentence)
 
     return lattice
@@ -23,10 +24,12 @@ def _extract_tag(node):
     pos, _ = node.feature.split(',', 1)
     return pos
 
+
 class MeCabError(Exception):
     pass
 
-class MeCab: # APIs are inspried by KoNLPy
+
+class MeCab:  # APIs are inspried by KoNLPy
     def __init__(self):
         self.tagger = _mecab.Tagger('')
 
@@ -41,7 +44,9 @@ class MeCab: # APIs are inspried by KoNLPy
         ]
 
     def morphs(self, sentence):
-        return [ morpheme for morpheme, _ in self.pos(sentence) ]
+        return [
+            morpheme for morpheme, _ in self.pos(sentence)
+        ]
 
     def nouns(self, sentence):
         return [
