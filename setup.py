@@ -145,7 +145,14 @@ setup(
     ext_modules=[
         Extension(
             name='_mecab',
-            sources=['mecab/pybind/_mecab.cpp'],
+            sources=[
+                'mecab/pybind/_mecab/node.cpp',
+                'mecab/pybind/_mecab/path.cpp',
+                'mecab/pybind/_mecab/lattice.cpp',
+                'mecab/pybind/_mecab/dictionaryinfo.cpp',
+                'mecab/pybind/_mecab/tagger.cpp',
+                'mecab/pybind/_mecab/_mecab.cpp',
+            ],
             include_dirs=[
                 get_pybind_include(),
                 get_pybind_include(user=True),

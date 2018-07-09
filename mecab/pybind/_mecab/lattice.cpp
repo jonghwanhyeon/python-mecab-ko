@@ -1,25 +1,9 @@
-#include <memory>
 #include <pybind11/pybind11.h>
 #include <mecab.h>
 
-#include <iostream>
-
 namespace py = pybind11;
 
-// Reference: https://taku910.github.io/mecab/doxygen/index.html
-PYBIND11_MODULE(_mecab, m) {
-  // Parameters for MeCab::Node::stat
-  m.attr("MECAB_NOR_NODE") = 0;
-  m.attr("MECAB_UNK_NODE") = 1;
-  m.attr("MECAB_BOS_NODE") = 2;
-  m.attr("MECAB_EOS_NODE") = 3;
-  m.attr("MECAB_EON_NODE") = 4;
-
-  // Parameters for MeCab::DictionaryInfo::type
-  m.attr("MECAB_SYS_DIC") = 0;
-  m.attr("MECAB_USR_DIC") = 1;
-  m.attr("MECAB_UNK_DIC") = 2;
-
+void initialize_lattice(py::module &m) {
   // Parameters for MeCab::Lattice::request_type
   m.attr("MECAB_ONE_BEST") = 1;
   m.attr("MECAB_NBEST") = 2;
@@ -34,42 +18,7 @@ PYBIND11_MODULE(_mecab, m) {
   m.attr("MECAB_TOKEN_BOUNDARY") = 1;
   m.attr("MECAB_INSIDE_TOKEN") = 2;
 
-  py::class_<MeCab::Node>(m, "Node")
-    .def_readwrite("prev", &MeCab::Node::prev)
-    .def_readwrite("next", &MeCab::Node::next)
-    .def_readwrite("enext", &MeCab::Node::enext)
-    .def_readwrite("bnext", &MeCab::Node::bnext)
-    .def_readwrite("rpath", &MeCab::Node::rpath)
-    .def_readwrite("lpath", &MeCab::Node::lpath)
-    .def_property_readonly("surface", [](MeCab::Node &self) {
-      return std::string(self.surface, self.length);
-    })
-    .def_readonly("feature", &MeCab::Node::feature)
-    .def_readwrite("id", &MeCab::Node::id)
-    .def_readwrite("length", &MeCab::Node::length)
-    .def_readwrite("rlength", &MeCab::Node::rlength)
-    .def_readwrite("rcAttr", &MeCab::Node::rcAttr)
-    .def_readwrite("lcAttr", &MeCab::Node::lcAttr)
-    .def_readwrite("posid", &MeCab::Node::posid)
-    .def_readwrite("char_type", &MeCab::Node::char_type)
-    .def_readwrite("stat", &MeCab::Node::stat)
-    .def_readwrite("isbest", &MeCab::Node::isbest)
-    .def_readwrite("alpha", &MeCab::Node::alpha)
-    .def_readwrite("beta", &MeCab::Node::beta)
-    .def_readwrite("prob", &MeCab::Node::prob)
-    .def_readwrite("wcost", &MeCab::Node::wcost)
-    .def_readwrite("cost", &MeCab::Node::cost)
-  ;
-
-  py::class_<MeCab::Path>(m, "Path")
-    .def_readwrite("rnode", &MeCab::Path::rnode)
-    .def_readwrite("rnext", &MeCab::Path::rnext)
-    .def_readwrite("lnode", &MeCab::Path::lnode)
-    .def_readwrite("lnext", &MeCab::Path::lnext)
-    .def_readwrite("cost", &MeCab::Path::cost)
-    .def_readwrite("prob", &MeCab::Path::prob)
-  ;
-
+  // Reference: https://taku910.github.io/mecab/doxygen/index.html
   py::class_<MeCab::Lattice>(m, "Lattice")
     .def(py::init([]() {
       return std::unique_ptr<MeCab::Lattice>(MeCab::Lattice::create());
@@ -178,47 +127,6 @@ PYBIND11_MODULE(_mecab, m) {
     })
     .def("set_what", [](MeCab::Lattice &self, const char *text) {
       self.set_what(text);
-    })
-  ;
-
-  py::class_<MeCab::DictionaryInfo>(m, "DictionaryInfo")
-    .def_readonly("filename", &MeCab::DictionaryInfo::filename)
-    .def_readonly("charset", &MeCab::DictionaryInfo::charset)
-    .def_readwrite("size", &MeCab::DictionaryInfo::size)
-    .def_readwrite("type", &MeCab::DictionaryInfo::type)
-    .def_readwrite("lsize", &MeCab::DictionaryInfo::lsize)
-    .def_readwrite("rsize", &MeCab::DictionaryInfo::rsize)
-    .def_readwrite("version", &MeCab::DictionaryInfo::version)
-    .def_readwrite("next", &MeCab::DictionaryInfo::next)
-  ;
-
-  py::class_<MeCab::Tagger>(m, "Tagger")
-    .def(py::init([](const char *argument) {
-      return std::unique_ptr<MeCab::Tagger>(MeCab::Tagger::create(argument));
-    }))
-    .def("parse", [](MeCab::Tagger &self, MeCab::Lattice *lattice) {
-      return self.parse(lattice);
-    })
-    .def("parse", [](MeCab::Tagger &self, const char *text) {
-      return self.parse(text);
-    })
-    .def("parse_to_node", [](MeCab::Tagger &self, const char *text) {
-      return self.parseToNode(text);
-    }, py::return_value_policy::reference)
-    .def("set_theta", [](MeCab::Tagger &self, float theta) {
-      self.set_theta(theta);
-    })
-    .def("theta", [](MeCab::Tagger &self) {
-      return self.theta();
-    })
-    .def("dictionary_info", [](MeCab::Tagger &self) {
-      return self.dictionary_info();
-    }, py::return_value_policy::reference)
-    .def("what", [](MeCab::Tagger &self) {
-      return self.what();
-    })
-    .def("version", [](MeCab::Tagger &self) {
-      return MeCab::Tagger::version();
     })
   ;
 }
