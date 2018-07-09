@@ -110,7 +110,7 @@ class InstallCommand(install):
 
         scripts_directory = os.path.join(base_path, 'scripts')
         subprocess.check_call([sys.executable,
-                               os.path.join(scripts_directory, 'install-mecab.py')],
+                               os.path.join(scripts_directory, 'install-mecab-ko.py')],
                               cwd=scripts_directory)
 
         super().run()
