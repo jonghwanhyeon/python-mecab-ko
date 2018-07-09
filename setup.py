@@ -84,7 +84,6 @@ class InstallCommand(install):
                               cwd=scripts_directory)
 
 
-
 def lazy(func):
     class Decorator:
         def __init__(self, *args, **kwargs):
@@ -121,13 +120,18 @@ def get_mecab_library_directory():
         'mecab-config', '--libs-only-L']).decode('utf-8').strip()
 
 
+with open('README.md', 'r', encoding='utf-8') as input_file:
+    long_description = input_file.read()
+
 setup(
     name='python-mecab-ko',
-    version='1.0.1',
+    version='1.0.2',
     url='https://github.com/hyeon0145/python-mecab-ko',
     author='Jonghwan Hyeon',
     author_email='hyeon0145@gmail.com',
     description='A python binding for mecab-ko',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     license='BSD',
     keywords='mecab mecab-ko',
     classifiers=[
