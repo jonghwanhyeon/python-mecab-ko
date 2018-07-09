@@ -1,6 +1,6 @@
+import os
 import subprocess
 import sys
-import os
 
 from setuptools import setup, find_packages
 from setuptools import Extension
