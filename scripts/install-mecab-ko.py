@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 
+from contextlib import contextmanager
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 
@@ -9,67 +10,74 @@ MECAB_KO_URL = 'https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-0.996-ko-
 MECAB_KO_DIC_URL = 'https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-ko-dic-2.0.3-20170922.tar.gz'
 
 
-def print_title(text):
-    print('\033[1m',  # bold
-          '\033[32m',  # green foreground
-          text,
-          '\033[0m',  # reset
-          sep='')
+@contextmanager
+def change_directory(directory):
+    original = os.path.abspath(os.getcwd())
+
+    os.chdir(directory)
+    yield
+
+    os.chdir(original)
 
 
-def directory_of(filename, base):
-    for directory, _, filenames in os.walk(base):
+def path_of(filename):
+    print('path_of() -- cwd:', os.getcwd())
+    for path, _, filenames in os.walk(os.getcwd()):
         if filename in filenames:
-            return directory
+            print('found:', path)
+            return path
 
     raise ValueError('File {} not found'.format(filename))
 
 
-def prepare(url, base):
-    components = urlparse(url)
-    filename = os.path.basename(components.path)
+def fancy_print(*args, color=None, bold=False, **kwargs):
+    if bold:
+        print('\033[1m', end='')
 
-    subprocess.check_call([
-        'wget',
-        '--progress=dot:binary',
-        '--output-document={}'.format(filename),
-        url,
-    ], cwd=base)
-    subprocess.check_call(['tar', '-xzf', filename], cwd=base)
+    if color:
+        print('\033[{}m'.format(color), end='')
 
+    print(*args, **kwargs)
 
-def configure(*args, base):
-    path = directory_of('configure', base=base)
-
-    subprocess.check_call([
-        os.path.join(path, 'configure'),
-        *args,
-    ], cwd=path)
+    print('\033[0m', end='')  # reset
 
 
-def install(base):
-    path = directory_of('Makefile', base=base)
+def install(url, *args):
+    def download(url):
+        components = urlparse(url)
+        filename = os.path.basename(components.path)
 
-    subprocess.check_call(['make'], cwd=path)
-    subprocess.check_call(['make', 'install'], cwd=path)
+        subprocess.check_call([
+            'wget',
+            '--progress=dot:binary',
+            '--output-document={}'.format(filename),
+            url,
+        ])
+        subprocess.check_call(['tar', '-xzf', filename])
+
+    def configure(*args):
+        with change_directory(path_of('configure')):
+            subprocess.check_call(['./configure', *args])
+
+    def make():
+        with change_directory(path_of('Makefile')):
+            subprocess.check_call(['make'])
+            subprocess.check_call(['make', 'install'])
+
+    with TemporaryDirectory() as directory:
+        with change_directory(directory):
+            download(url)
+            configure(*args)
+            make()
 
 
 if __name__ == '__main__':
-    print_title('Installing mecab-ko...')
-    with TemporaryDirectory() as working_directory:
-        prepare(MECAB_KO_URL, base=working_directory)
-        configure('--prefix={}'.format(sys.prefix),
-                  '--enable-utf8-only',
-                  base=working_directory)
-        install(base=working_directory)
+    fancy_print('Installing mecab-ko...', color=32, bold=True)
+    install(MECAB_KO_URL, '--prefix={}'.format(sys.prefix),
+                          '--enable-utf8-only')
 
-    print_title('Installing mecab-ko-dic...')
-    with TemporaryDirectory() as working_directory:
-        mecab_config_path = os.path.join(sys.prefix, 'bin', 'mecab-config')
-
-        prepare(MECAB_KO_DIC_URL, base=working_directory)
-        configure('--prefix={}'.format(sys.prefix),
-                  '--with-charset=utf8',
-                  '--with-mecab-config={}'.format(mecab_config_path),
-                  base=working_directory)
-        install(base=working_directory)
+    fancy_print('Installing mecab-ko-dic...', color=32, bold=True)
+    mecab_config_path = os.path.join(sys.prefix, 'bin', 'mecab-config')
+    install(MECAB_KO_DIC_URL, '--prefix={}'.format(sys.prefix),
+                              '--with-charset=utf8',
+                              '--with-mecab-config={}'.format(mecab_config_path))
