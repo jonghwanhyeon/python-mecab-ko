@@ -21,10 +21,8 @@ def change_directory(directory):
 
 
 def path_of(filename):
-    print('path_of() -- cwd:', os.getcwd())
     for path, _, filenames in os.walk(os.getcwd()):
         if filename in filenames:
-            print('found:', path)
             return path
 
     raise ValueError('File {} not found'.format(filename))
