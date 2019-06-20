@@ -45,13 +45,13 @@ def install(url, *args):
         components = urlparse(url)
         filename = os.path.basename(components.path)
 
-        subprocess.check_call([
+        subprocess.run([
             'wget',
             '--progress=dot:binary',
             '--output-document={}'.format(filename),
             url,
-        ])
-        subprocess.check_call(['tar', '-xzf', filename])
+        ], check=True)
+        subprocess.run(['tar', '-xzf', filename], check=True)
 
     def configure(*args):
         with change_directory(path_of('configure')):
@@ -60,12 +60,12 @@ def install(url, *args):
             except:
                 pass
                 
-            subprocess.check_call(['./configure', *args])
+            subprocess.run(['./configure', *args], check=True)
 
     def make():
         with change_directory(path_of('Makefile')):
-            subprocess.check_call(['make'])
-            subprocess.check_call(['make', 'install'])
+            subprocess.run(['make'], check=True)
+            subprocess.run(['make', 'install'], check=True)
 
     with TemporaryDirectory() as directory:
         with change_directory(directory):
