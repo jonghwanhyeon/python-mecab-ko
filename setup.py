@@ -125,8 +125,8 @@ with open('README.md', 'r', encoding='utf-8') as input_file:
 
 setup(
     name='python-mecab-ko',
-    version='1.0.6',
-    url='https://github.com/hyeon0145/python-mecab-ko',
+    version='1.0.7',
+    url='https://github.com/jonghwanhyeon/python-mecab-ko',
     author='Jonghwan Hyeon',
     author_email='hyeon0145@gmail.com',
     description='A python binding for mecab-ko',
