@@ -55,6 +55,11 @@ def install(url, *args):
 
     def configure(*args):
         with change_directory(path_of('configure')):
+            try:
+                subprocess.run(['./autogen.sh'])
+            except:
+                pass
+                
             subprocess.check_call(['./configure', *args])
 
     def make():
