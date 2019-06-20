@@ -64,8 +64,9 @@ def install(url, *args):
 
     def make():
         with change_directory(path_of('Makefile')):
-            subprocess.run(['make'], check=True)
-            subprocess.run(['make', 'install'], check=True)
+            library_environment = {'LD_LIBRARY_PATH': os.path.join(sys.prefix, 'lib')}
+            subprocess.run(['make'], check=True, env=library_environment)
+            subprocess.run(['make', 'install'], check=True, env=library_environment)
 
     with TemporaryDirectory() as directory:
         with change_directory(directory):
