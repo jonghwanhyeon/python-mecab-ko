@@ -40,7 +40,7 @@ def fancy_print(*args, color=None, bold=False, **kwargs):
     print('\033[0m', end='')  # reset
 
 
-def install(url, *args):
+def install(url, *args, environment=None):
     def download(url):
         components = urlparse(url)
         filename = os.path.basename(components.path)
@@ -64,9 +64,8 @@ def install(url, *args):
 
     def make():
         with change_directory(path_of('Makefile')):
-            library_environment = {'LD_LIBRARY_PATH': os.path.join(sys.prefix, 'lib')}
-            subprocess.run(['make'], check=True, env=library_environment)
-            subprocess.run(['make', 'install'], check=True, env=library_environment)
+            subprocess.run(['make'], check=True, env=environment)
+            subprocess.run(['make', 'install'], check=True, env=environment)
 
     with TemporaryDirectory() as directory:
         with change_directory(directory):
@@ -84,4 +83,7 @@ if __name__ == '__main__':
     mecab_config_path = os.path.join(sys.prefix, 'bin', 'mecab-config')
     install(MECAB_KO_DIC_URL, '--prefix={}'.format(sys.prefix),
                               '--with-charset=utf8',
-                              '--with-mecab-config={}'.format(mecab_config_path))
+                              '--with-mecab-config={}'.format(mecab_config_path),
+                              environment={
+                                  'LD_LIBRARY_PATH': os.path.join(sys.prefix, 'lib'),
+                              })
