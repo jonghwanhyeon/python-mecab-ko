@@ -1,4 +1,17 @@
 import _mecab
+from collections import namedtuple
+
+
+Feature = namedtuple('Feature', [
+    'pos',
+    'semantic',
+    'has_jongseong',
+    'reading',
+    'type',
+    'start_pos',
+    'end_pos',
+    'expression',
+])
 
 
 def _create_lattice(sentence):
@@ -9,11 +22,21 @@ def _create_lattice(sentence):
     return lattice
 
 
-def _extract_tag(node):
-    # Reference: https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY
-    # feature = <tag>,<semantic>,<has_jongseong>,<reading>,<type>,<first_tag>,<last_tag>,<representation>
-    pos, _ = node.feature.split(',', 1)
-    return pos
+def _extract_feature(node):
+    # Reference:
+    # - http://taku910.github.io/mecab/learn.html
+    # - https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY
+    # - https://bitbucket.org/eunjeon/mecab-ko-dic/src/master/utils/dictionary/lexicon.py
+    
+    # feature = <pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
+    values = node.feature.split(',')
+    assert len(values) == 8
+
+    values = [value if value != '*' else None for value in values]
+    feature = dict(zip(Feature._fields, values))
+    feature['has_jongseong'] = {'T': True, 'F': False}.get(feature['has_jongseong'])
+
+    return Feature(**feature)
 
 
 class MeCabError(Exception):
@@ -24,23 +47,28 @@ class MeCab:  # APIs are inspried by KoNLPy
     def __init__(self):
         self.tagger = _mecab.Tagger('')
 
-    def pos(self, sentence):
+    def parse(self, sentence):
         lattice = _create_lattice(sentence)
         if not self.tagger.parse(lattice):
             raise MeCabError(self.tagger.what())
 
         return [
-            (node.surface, _extract_tag(node))
+            (node.surface, _extract_feature(node))
             for node in lattice
+        ]
+
+    def pos(self, sentence):
+        return [
+            (surface, feature.pos) for surface, feature in self.parse(sentence)
         ]
 
     def morphs(self, sentence):
         return [
-            morpheme for morpheme, _ in self.pos(sentence)
+            surface for surface, _ in self.parse(sentence)
         ]
 
     def nouns(self, sentence):
         return [
-            morpheme for morpheme, pos in self.pos(sentence)
-            if pos.startswith('N')
+            surface for surface, feature in self.parse(sentence)
+            if feature.pos.startswith('N')
         ]
