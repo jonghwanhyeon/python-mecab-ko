@@ -24,6 +24,30 @@ mecab.nouns('우리나라에는 무릎 치료를 잘하는 정형외과가 없�
 
 mecab.pos('자연주의 쇼핑몰은 어떤 곳인가?')
 # [('자연주의', 'NNG'), ('쇼핑몰', 'NNG'), ('은', 'JX'), ('어떤', 'MM'), ('곳', 'NNG'), ('인가', 'VCP+EF'), ('?', 'SF')]
+
+mecab.parse('즐거운 하루 보내세요!')
+# [
+#     ('즐거운', Feature(
+#         pos='VA+ETM', semantic=None, has_jongseong=True, reading='즐거운',
+#         type='Inflect', start_pos='VA', end_pos='ETM',
+#         expression='즐겁/VA/*+ᆫ/ETM/*')),
+#     ('하루', Feature(
+#         pos='NNG', semantic=None, has_jongseong=False, reading='하루',
+#         type=None, start_pos=None, end_pos=None,
+#         expression=None)),
+#     ('보내', Feature(
+#         pos='VV', semantic=None, has_jongseong=False, reading='보내',
+#         type=None, start_pos=None, end_pos=None,
+#         expression=None)),
+#     ('세요', Feature(
+#         pos='EP+EF', semantic=None, has_jongseong=False, reading='세요',
+#         type='Inflect', start_pos='EP', end_pos='EF',
+#         expression='시/EP/*+어요/EF/*')),
+#     ('!', Feature(
+#         pos='SF', semantic=None, has_jongseong=None, reading=None,
+#         type=None, start_pos=None, end_pos=None,
+#         expression=None))
+# ]
 ```
 
 ## Acknowledgments
