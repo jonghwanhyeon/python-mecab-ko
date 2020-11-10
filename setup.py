@@ -10,8 +10,10 @@ from setuptools.command.build_ext import build_ext
 
 # Based on https://github.com/pybind/python_example
 
+mecab_config_path = os.path.join(sys.prefix, 'bin', 'mecab-config')
 
 class BuildExtensionCommand(build_ext):
+
     compiler_options = {
         'msvc': ['/EHsc'],
         'unix': [],
@@ -111,13 +113,13 @@ def get_pybind_include(user=False):
 @lazy
 def get_mecab_include_directory():
     return subprocess.check_output([
-        'mecab-config', '--inc-dir']).decode('utf-8').strip()
+        mecab_config_path, '--inc-dir']).decode('utf-8').strip()
 
 
 @lazy
 def get_mecab_library_directory():
     return subprocess.check_output([
-        'mecab-config', '--libs-only-L']).decode('utf-8').strip()
+        mecab_config_path, '--libs-only-L']).decode('utf-8').strip()
 
 
 with open('README.md', 'r', encoding='utf-8') as input_file:
