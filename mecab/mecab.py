@@ -44,8 +44,13 @@ class MeCabError(Exception):
 
 
 class MeCab:  # APIs are inspried by KoNLPy
-    def __init__(self):
-        self.tagger = _mecab.Tagger('')
+    def __init__(self, dicpath=''):
+        argument = ''
+
+        if dicpath != '':
+            argument = '-d %s' % dicpath
+
+        self.tagger = _mecab.Tagger(argument)
 
     def parse(self, sentence):
         lattice = _create_lattice(sentence)
