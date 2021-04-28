@@ -3,6 +3,12 @@ A python binding for mecab-ko
 
 ## Prerequisites
 - python3-dev
+- wget
+prerequisites can be installed by the following:
+```
+python3 -m pip install python-dev-tools # pip3 install python-dev-tools
+apt-get install wget # or brew install wget on macOS
+```
 
 ## Installation
 Using `pip`:
