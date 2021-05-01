@@ -30,7 +30,7 @@ def _extract_feature(node):
     
     # feature = <pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
     values = node.feature.split(',')
-    assert len(values) == 8
+    # assert len(values) == 8
 
     values = [value if value != '*' else None for value in values]
     feature = dict(zip(Feature._fields, values))
