@@ -14,15 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup requirements
-        run: pip install -r requirements.txt
-
       - name: Build wheels
         uses: pypa/cibuildwheel@v1.12.0
         # to supply options, put them in 'env', like:
         env:
           # install something required for the build (you might want to use pyproject.toml instead)
-          CIBW_BEFORE_BUILD: pip install pybind11
+          CIBW_BEFORE_BUILD: pip install pybind11 && python setup.py install
       - uses: actions/upload-artifact@v2
         with:
           path: ./wheelhouse/*.whl
