@@ -10,7 +10,7 @@ from setuptools.command.build_ext import build_ext
 
 # Based on https://github.com/pybind/python_example
 
-os.environ["PATH"] = os.environ["PATH"] + os.pathsep + os.path.join(sys.prefix, 'bin')
+os.environ['PATH'] += os.pathsep + os.path.join(sys.prefix, 'bin')
 
 class BuildExtensionCommand(build_ext):
 
