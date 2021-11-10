@@ -43,14 +43,25 @@ class MeCabError(Exception):
     pass
 
 
-class MeCab:  # APIs are inspried by KoNLPy
-    def __init__(self, dicpath=''):
-        argument = ''
+class MeCab:  # APIs are inspired by KoNLPy
+    def __init__(self, dicpath=None, mecabrc_path=None):
+        arguments = []
 
-        if dicpath != '':
-            argument = '-d %s' % dicpath
+        if mecabrc_path:
+            arguments.append(f"-r {mecabrc_path}")
 
-        self.tagger = _mecab.Tagger(argument)
+        if dicpath:
+            arguments.append(f"-d {dicpath}")
+
+        arguments_str = " ".join(arguments)
+
+        try:
+            self.tagger = _mecab.Tagger(arguments_str)
+        except TypeError as e:
+            raise ValueError(
+                "Error loading tagger; try specifying the `dic_path' and/or `mecabrc_path`; "
+                f"({e})"
+            )
 
     def parse(self, sentence):
         lattice = _create_lattice(sentence)
