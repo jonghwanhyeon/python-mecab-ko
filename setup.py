@@ -147,7 +147,7 @@ setup(
     ],
     zip_safe=False,
     install_requires=[
-        'pybind11 ~= 2.0'
+        'pybind11 ~= 2.9.0'
     ],
     python_requires='>=3',
     packages=find_packages(),
