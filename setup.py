@@ -2,180 +2,95 @@ import os
 import shutil
 import subprocess
 import sys
+from glob import glob
+from pathlib import Path
 
-from setuptools import Extension, find_packages, setup
-from setuptools.command.build_ext import build_ext
-from setuptools.command.install import install
-
-# Based on https://github.com/pybind/python_example
-
-os.environ['PATH'] += os.pathsep + os.path.join(sys.prefix, 'bin')
-
-class BuildExtensionCommand(build_ext):
-
-    compiler_options = {
-        'msvc': ['/EHsc'],
-        'unix': [],
-    }
-
-    if sys.platform == 'darwin':
-        compiler_options['unix'] += [
-            '-stdlib=libc++',
-            '-mmacosx-version-min=10.7',
-        ]
-
-    def build_extensions(self):
-        compiler_type = self.compiler.compiler_type
-        options = self.compiler_options.get(compiler_type, [])
-
-        if compiler_type == 'unix':
-            options.append('-DVERSION_INFO="{}"'.format(self.distribution.get_version()))
-            options.append(self._cpp_flag())
-
-            if self._has_flag('-fvisibility=hidden'):
-                options.append('-fvisibility=hidden')
-        elif compiler_type == 'msvc':
-            options.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
-
-        for extension in self.extensions:
-            extension.extra_compile_args = options
-
-        super().build_extensions()
-
-    # As of Python 3.6, CCompiler has a `has_flag` method.
-    # cf http://bugs.python.org/issue26689
-    def _has_flag(self, flag):
-        """Return a boolean indicating whether a flag name is supported on
-        the specified compiler.
-        """
-        import tempfile
-        with tempfile.NamedTemporaryFile('w', suffix='.cpp') as output_file:
-            output_file.write('int main (int argc, char **argv) { return 0; }')
-            try:
-                self.compiler.compile([output_file.name], extra_postargs=[flag])
-            except setuptools.distutils.errors.CompileError:
-                return False
-
-        return True
-
-    def _cpp_flag(self):
-        """Return the -std=c++[11/14] compiler flag.
-        The c++14 is prefered over c++11 (when it is available).
-        """
-        if self._has_flag('-std=c++14'):
-            return '-std=c++14'
-        elif self._has_flag('-std=c++11'):
-            return '-std=c++11'
-        else:
-            raise RuntimeError('Unsupported compiler -- at least C++11 support is needed!')
+from pybind11.setup_helpers import Pybind11Extension, build_ext
+from setuptools import find_packages, setup
 
 
-class InstallCommand(install):
-    def run(self):
-        if not shutil.which('mecab'):
-            self.install_mecab()
+def get_mecab_include_directory() -> str:
+    return subprocess.check_output(
+        ["mecab-config", "--inc-dir"], encoding="utf-8"
+    ).strip()
 
-        super().run()
-
-    def install_mecab(self):
-        base_path = os.path.abspath(os.path.dirname(__file__))
-        scripts_directory = os.path.join(base_path, 'scripts')
-        subprocess.check_call([sys.executable,
-                               os.path.join(scripts_directory, 'install-mecab-ko.py')],
-                              cwd=scripts_directory)
+def get_mecab_library_directory() -> str:
+    return subprocess.check_output(
+        ["mecab-config", "--libs-only-L"], encoding="utf-8"
+    ).strip()
 
 
-def lazy(func):
-    class Decorator:
-        def __init__(self, *args, **kwargs):
-            self.args = args
-            self.kwargs = kwargs
+class EnsureMeCabThenBuild(Pybind11Extension):
+    def __init__(self, *args, **kwargs):
+        if not self._is_mecab_installed():
+            self._install_mecab()
 
-        def __str__(self):
-            return func(*self.args, **self.kwargs)
-
-        def __add__(self, other):
-            return str(self) + other
-
-        def __radd__(self, other):
-            return other + str(self)
-
-    return Decorator
+        kwargs["include_dirs"] = [get_mecab_include_directory()]
+        kwargs["library_dirs"] = [get_mecab_library_directory()]
+        kwargs["libraries"] = ["mecab"]
+        kwargs["runtime_library_dirs"] = [get_mecab_library_directory()]
+        super().__init__(*args, **kwargs)
 
 
-@lazy
-def get_pybind_include(user=False):
-    import pybind11
-    return pybind11.get_include(user)
+    def _is_mecab_installed(self) -> bool:
+        # When use virtualenv binaires without activation,
+        # sys.prefix is properly updated but PATH is not.
+
+        # $ venv/bin/pip install python-mecab-ko
+        # -> sys.prefix = /venv
+        # -> PATH = /home/user/.local/bin:....
+
+        # (venv) $ pip install python-mecab-ko
+        # -> sys.prefix = /venv
+        # -> PATH = /venv/bin:/home/user/.local/bin:...
+
+        path = os.environ["PATH"]
+        path += f"{os.pathsep}{os.path.join(sys.prefix, 'bin')}"
+        return shutil.which("mecab", path=path) is not None
+
+    def _install_mecab(self):
+        setup_path = Path(__file__).parent.absolute()
+        scripts_path = setup_path / "scripts"
+        install_script_path = scripts_path / "install-mecab-ko.py"
+        subprocess.check_call(
+            [sys.executable, str(install_script_path)], cwd=scripts_path
+        )
 
 
-@lazy
-def get_mecab_include_directory():
-    return subprocess.check_output([
-        'mecab-config', '--inc-dir']).decode('utf-8').strip()
-
-
-@lazy
-def get_mecab_library_directory():
-    return subprocess.check_output([
-        'mecab-config', '--libs-only-L']).decode('utf-8').strip()
-
-
-with open('README.md', 'r', encoding='utf-8') as input_file:
+with open("README.md", "r", encoding="utf-8") as input_file:
     long_description = input_file.read()
 
+
 setup(
-    name='python-mecab-ko',
-    version='1.0.14',
-    url='https://github.com/jonghwanhyeon/python-mecab-ko',
-    author='Jonghwan Hyeon',
-    author_email='hyeon0145@gmail.com',
-    description='A python binding for mecab-ko',
+    name="python-mecab-ko",
+    version="1.0.14",
+    url="https://github.com/jonghwanhyeon/python-mecab-ko",
+    author="Jonghwan Hyeon",
+    author_email="hyeon0145@gmail.com",
+    description="A python binding for mecab-ko",
     long_description=long_description,
-    long_description_content_type='text/markdown',
-    license='BSD',
-    keywords='mecab mecab-ko',
+    long_description_content_type="text/markdown",
+    license="BSD",
+    keywords="mecab mecab-ko",
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: BSD License',
-        'Natural Language :: Korean',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3 :: Only',
-        'Topic :: Text Processing',
-        'Topic :: Text Processing :: Linguistic',
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: BSD License",
+        "Natural Language :: Korean",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Topic :: Text Processing",
+        "Topic :: Text Processing :: Linguistic",
     ],
     zip_safe=False,
-    install_requires=[
-        'pybind11 ~= 2.9.0'
-    ],
-    python_requires='>=3',
+    python_requires=">=3.7",
     packages=find_packages(),
-    data_files=[('scripts', ['scripts/install-mecab-ko.py'])],
+    data_files=[("scripts", ["scripts/install-mecab-ko.py"])],
+    cmdclass={"build_ext": build_ext},
     ext_modules=[
-        Extension(
-            name='_mecab',
-            sources=[
-                'mecab/pybind/_mecab/node.cpp',
-                'mecab/pybind/_mecab/path.cpp',
-                'mecab/pybind/_mecab/lattice.cpp',
-                'mecab/pybind/_mecab/dictionaryinfo.cpp',
-                'mecab/pybind/_mecab/tagger.cpp',
-                'mecab/pybind/_mecab/_mecab.cpp',
-            ],
-            include_dirs=[
-                get_pybind_include(),
-                get_pybind_include(user=True),
-                get_mecab_include_directory(),
-            ],
-            libraries=['mecab'],
-            library_dirs=[get_mecab_library_directory()],
-            runtime_library_dirs=[get_mecab_library_directory()],
-            language='c++',
+        EnsureMeCabThenBuild(
+            name="_mecab",
+            sources=sorted(glob("mecab/pybind/**/*.cpp", recursive=True)),
         ),
     ],
-    cmdclass={
-        'install': InstallCommand,
-        'build_ext': BuildExtensionCommand
-    },
 )
