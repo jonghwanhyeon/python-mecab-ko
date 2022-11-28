@@ -11,7 +11,7 @@ void initialize_node(py::module &m) {
   m.attr("MECAB_EOS_NODE") = 3;
   m.attr("MECAB_EON_NODE") = 4;
 
-  // Reference: https://taku910.github.io/mecab/doxygen/index.html
+  // Reference: https://taku910.github.io/mecab/doxygen/structmecab__node__t.html
   py::class_<MeCab::Node>(m, "Node")
     .def_readwrite("prev", &MeCab::Node::prev)
     .def_readwrite("next", &MeCab::Node::next)

@@ -6,7 +6,7 @@
 namespace py = pybind11;
 
 void initialize_tagger(py::module &m) {
-  // Reference: https://taku910.github.io/mecab/doxygen/index.html
+  // Reference: https://taku910.github.io/mecab/doxygen/classMeCab_1_1Tagger.html
   py::class_<MeCab::Tagger>(m, "Tagger")
     .def(py::init([](const char *arguments) {
       return std::unique_ptr<MeCab::Tagger>(MeCab::Tagger::create(arguments));

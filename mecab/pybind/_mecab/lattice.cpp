@@ -30,7 +30,7 @@ void initialize_lattice(py::module &m) {
   m.attr("MECAB_TOKEN_BOUNDARY") = 1;
   m.attr("MECAB_INSIDE_TOKEN") = 2;
 
-  // Reference: https://taku910.github.io/mecab/doxygen/index.html
+  // Reference: https://taku910.github.io/mecab/doxygen/classMeCab_1_1Lattice.html
   py::class_<MeCab::Lattice>(m, "Lattice")
     .def(py::init([]() {
       return std::unique_ptr<MeCab::Lattice>(MeCab::Lattice::create());
