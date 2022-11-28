@@ -1,5 +1,6 @@
 import os
 import shutil
+import site
 import subprocess
 import sys
 from glob import glob
@@ -22,6 +23,8 @@ def get_mecab_library_directory() -> str:
 
 class EnsureMeCabThenBuild(Pybind11Extension):
     def __init__(self, *args, **kwargs):
+        self._configure_path()
+
         if not self._is_mecab_installed():
             self._install_mecab()
 
@@ -31,22 +34,16 @@ class EnsureMeCabThenBuild(Pybind11Extension):
         kwargs["runtime_library_dirs"] = [get_mecab_library_directory()]
         super().__init__(*args, **kwargs)
 
+    def _configure_path(self):
+        paths = [
+            os.path.join(sys.prefix, "bin"),
+            os.path.join(site.getuserbase(), "bin"),
+        ]
+        for path in paths:
+            os.environ["PATH"] += f"{os.pathsep}{path}"
 
     def _is_mecab_installed(self) -> bool:
-        # When use virtualenv binaires without activation,
-        # sys.prefix is properly updated but PATH is not.
-
-        # $ venv/bin/pip install python-mecab-ko
-        # -> sys.prefix = /venv
-        # -> PATH = /home/user/.local/bin:....
-
-        # (venv) $ pip install python-mecab-ko
-        # -> sys.prefix = /venv
-        # -> PATH = /venv/bin:/home/user/.local/bin:...
-
-        path = os.environ["PATH"]
-        path += f"{os.pathsep}{os.path.join(sys.prefix, 'bin')}"
-        return shutil.which("mecab", path=path) is not None
+        return shutil.which("mecab") is not None
 
     def _install_mecab(self):
         setup_path = Path(__file__).parent.absolute()
