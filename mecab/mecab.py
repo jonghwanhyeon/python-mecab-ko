@@ -1,4 +1,4 @@
-from typing import List, NamedTuple, Tuple
+from typing import List, NamedTuple, Optional, Tuple
 
 import _mecab
 
@@ -44,13 +44,12 @@ class MeCabError(Exception):
 
 
 class MeCab:  # APIs are inspried by KoNLPy
-    def __init__(self, dicpath: str = ""):
-        arguments = ""
+    def __init__(self, dictionary_path: Optional[str] = None):
+        arguments = []
+        if dictionary_path is not None:
+            arguments.append(f"-d {dictionary_path}")
 
-        if dicpath != "":
-            arguments = "-d %s" % dicpath
-
-        self.tagger = _mecab.Tagger(arguments)
+        self.tagger = _mecab.Tagger(" ".join(arguments))
 
     def parse(self, sentence: str) -> List[Tuple[str, Feature]]:
         lattice = _create_lattice(sentence)
