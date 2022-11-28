@@ -1,6 +1,7 @@
 import os
 import site
 import subprocess
+from pathlib import Path
 import sys
 from contextlib import contextmanager
 from tempfile import TemporaryDirectory
@@ -11,7 +12,14 @@ MECAB_KO_DIC_URL = 'https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-k
 
 
 def is_writable(directory: str) -> bool:
-    return os.access(directory, os.W_OK)
+    path = Path(directory)
+    while not path.is_dir():
+        parent = path.parent
+        if path == parent:
+            break
+        path = parent
+
+    return os.access(path, os.W_OK)
 
 
 def guess_prefix() -> str:
