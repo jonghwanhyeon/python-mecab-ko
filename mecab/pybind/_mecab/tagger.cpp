@@ -11,29 +11,12 @@ void initialize_tagger(py::module &m) {
     .def(py::init([](const char *arguments) {
       return std::unique_ptr<MeCab::Tagger>(MeCab::Tagger::create(arguments));
     }))
-    .def("parse", [](MeCab::Tagger &self, MeCab::Lattice *lattice) {
-      return self.parse(lattice);
-    })
-    .def("parse", [](MeCab::Tagger &self, const char *text) {
-      return self.parse(text);
-    })
-    .def("parse_to_node", [](MeCab::Tagger &self, const char *text) {
-      return self.parseToNode(text);
-    }, py::return_value_policy::reference)
-    .def("set_theta", [](MeCab::Tagger &self, float theta) {
-      self.set_theta(theta);
-    })
-    .def("theta", [](MeCab::Tagger &self) {
-      return self.theta();
-    })
-    .def("dictionary_info", [](MeCab::Tagger &self) {
-      return self.dictionary_info();
-    }, py::return_value_policy::reference)
-    .def("what", [](MeCab::Tagger &self) {
-      return self.what();
-    })
-    .def("version", [](MeCab::Tagger &self) {
-      return MeCab::Tagger::version();
-    })
+    .def("parse", py::overload_cast<const char *>(&MeCab::Tagger::parse), py::return_value_policy::reference)
+    .def("parse", py::overload_cast<MeCab::Lattice *>(&MeCab::Tagger::parse, py::const_))
+    .def("set_theta", &MeCab::Tagger::set_theta)
+    .def("theta", &MeCab::Tagger::theta)
+    .def("dictionary_info", &MeCab::Tagger::dictionary_info, py::return_value_policy::reference)
+    .def("what", &MeCab::Tagger::what, py::return_value_policy::copy)
+    .def_static("version", &MeCab::Tagger::version)
   ;
 }

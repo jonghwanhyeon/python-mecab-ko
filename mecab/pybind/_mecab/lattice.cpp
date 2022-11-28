@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include <pybind11/pybind11.h>
 #include <mecab.h>
 
@@ -8,7 +10,7 @@ private:
   const MeCab::Node *cursor;
 
 public:
-  Iterator(const MeCab::Node* cursor) : cursor(cursor) {}
+  explicit Iterator(const MeCab::Node* cursor) : cursor(cursor) {}
 
   const MeCab::Node& operator*() const { return *cursor; }
   Iterator& operator++() { cursor = cursor->next; return *this; }
@@ -35,116 +37,46 @@ void initialize_lattice(py::module &m) {
     .def(py::init([]() {
       return std::unique_ptr<MeCab::Lattice>(MeCab::Lattice::create());
     }))
-    .def("clear", [](MeCab::Lattice &self) {
-      self.clear();
-    })
-    .def("is_available", [](MeCab::Lattice &self) {
-      return self.is_available();
-    })
-    .def("bos_node", [](MeCab::Lattice &self) {
-      return self.bos_node();
-    }, py::return_value_policy::reference)
-    .def("eos_node", [](MeCab::Lattice &self) {
-      return self.eos_node();
-    }, py::return_value_policy::reference)
-    .def("end_nodes", [](MeCab::Lattice &self, size_t position) {
-      return self.end_nodes(position);
-    })
-    .def("begin_nodes", [](MeCab::Lattice &self, size_t position) {
-      return self.begin_nodes(position);
-    }, py::return_value_policy::reference)
-    .def("sentence", [](MeCab::Lattice &self) {
-      return self.sentence();
-    }, py::return_value_policy::reference)
-    .def("set_sentence", [](MeCab::Lattice &self, const char *sentence) {
-      self.set_sentence(sentence);
-    })
-    .def("set_sentence", [](MeCab::Lattice &self, const char *sentence, size_t length) {
-      self.set_sentence(sentence, length);
-    })
-    .def("size", [](MeCab::Lattice &self) {
-      return self.size();
-    })
-    .def("set_Z", [](MeCab::Lattice &self, double Z) {
-      self.set_Z(Z);
-    })
-    .def("Z", [](MeCab::Lattice &self) {
-      return self.Z();
-    })
-    .def("set_theta", [](MeCab::Lattice &self, float theta) {
-      self.set_theta(theta);
-    })
-    .def("theta", [](MeCab::Lattice &self) {
-      return self.theta();
-    })
-    .def("next", [](MeCab::Lattice &self) {
-      return self.next();
-    })
-    .def("request_type", [](MeCab::Lattice &self) {
-      return self.request_type();
-    })
-    .def("has_request_type", [](MeCab::Lattice &self, int request_type) {
-      return self.has_request_type(request_type);
-    })
-    .def("set_request_type", [](MeCab::Lattice &self, int request_type) {
-      self.set_request_type(request_type);
-    })
-    .def("add_request_type", [](MeCab::Lattice &self, int request_type) {
-      self.add_request_type(request_type);
-    })
-    .def("remove_request_type", [](MeCab::Lattice &self, int request_type) {
-      self.remove_request_type(request_type);
-    })
-    .def("new_node", [](MeCab::Lattice &self) {
-      return self.newNode();
-    }, py::return_value_policy::reference)
-    .def("to_string", [](MeCab::Lattice &self) {
-      return self.toString();
-    })
-    .def("to_string", [](MeCab::Lattice &self, const MeCab::Node *node) {
-      return self.toString(node);
-    })
-    .def("enum_nbest_as_string", [](MeCab::Lattice &self, size_t n) {
-      return self.enumNBestAsString(n);
-    })
-    .def("to_string", [](MeCab::Lattice &self, char *buffer, size_t size) {
-      return self.toString(buffer, size);
-    })
-    .def("to_string", [](MeCab::Lattice &self, const MeCab::Node *node, char *buffer, size_t size) {
-      return self.toString(node, buffer, size);
-    })
-    .def("enum_nbest_as_string", [](MeCab::Lattice &self, size_t n, char *buffer, size_t size) {
-      return self.enumNBestAsString(n, buffer, size);
-    })
-    .def("has_constraint", [](MeCab::Lattice &self) {
-      return self.has_constraint();
-    })
-    .def("boundary_constraint", [](MeCab::Lattice &self, size_t position) {
-      return self.boundary_constraint(position);
-    })
-    .def("feature_constraint", [](MeCab::Lattice &self, size_t position) {
-      return self.feature_constraint(position);
-    })
-    .def("set_boundary_constraint", [](MeCab::Lattice &self, size_t position, int boundary_constraint_type) {
-      self.set_boundary_constraint(position, boundary_constraint_type);
-    })
-    .def("set_feature_constraint", [](MeCab::Lattice &self, size_t begin_position, size_t end_position, const char *feature) {
-      self.set_feature_constraint(begin_position, end_position, feature);
-    })
-    .def("set_result", [](MeCab::Lattice &self, const char *result) {
-      self.set_result(result);
-    })
-    .def("what", [](MeCab::Lattice &self) {
-      return self.what();
-    })
-    .def("set_what", [](MeCab::Lattice &self, const char *text) {
-      self.set_what(text);
-    })
-    .def("__iter__", [](MeCab::Lattice &self) {
-      Iterator begin = Iterator(self.bos_node()->next); // beigin should point to the actual first element
+    .def("clear", &MeCab::Lattice::clear)
+    .def("is_available", &MeCab::Lattice::is_available)
+    .def("bos_node", &MeCab::Lattice::bos_node, py::return_value_policy::reference)
+    .def("eos_node", &MeCab::Lattice::eos_node, py::return_value_policy::reference)
+    .def("begin_nodes", py::overload_cast<size_t>(&MeCab::Lattice::begin_nodes, py::const_), py::return_value_policy::reference)
+    .def("end_nodes", py::overload_cast<size_t>(&MeCab::Lattice::end_nodes, py::const_), py::return_value_policy::reference)
+    .def("sentence", &MeCab::Lattice::sentence)
+    .def("set_sentence", py::overload_cast<const char *>(&MeCab::Lattice::set_sentence))
+    .def("set_sentence", py::overload_cast<const char *, size_t>(&MeCab::Lattice::set_sentence))
+    .def("size", &MeCab::Lattice::size)
+    .def("set_Z", &MeCab::Lattice::set_Z)
+    .def("Z", &MeCab::Lattice::Z)
+    .def("set_theta", &MeCab::Lattice::set_theta)
+    .def("theta", &MeCab::Lattice::theta)
+    .def("next", &MeCab::Lattice::next)
+    .def("request_type", &MeCab::Lattice::request_type)
+    .def("has_request_type", &MeCab::Lattice::has_request_type)
+    .def("set_request_type", &MeCab::Lattice::set_request_type)
+    .def("add_request_type", &MeCab::Lattice::add_request_type)
+    .def("remove_request_type", &MeCab::Lattice::remove_request_type)
+    .def("new_node", &MeCab::Lattice::newNode, py::return_value_policy::reference)
+    .def("to_string", py::overload_cast<>(&MeCab::Lattice::toString), py::return_value_policy::copy)
+    .def("to_string", py::overload_cast<const MeCab::Node *>(&MeCab::Lattice::toString), py::return_value_policy::copy)
+    .def("to_string", py::overload_cast<char *, size_t>(&MeCab::Lattice::toString))
+    .def("to_string", py::overload_cast<const MeCab::Node *, char *, size_t>(&MeCab::Lattice::toString))
+    .def("enum_nbest_as_string", py::overload_cast<size_t>(&MeCab::Lattice::enumNBestAsString), py::return_value_policy::copy)
+    .def("enum_nbest_as_string", py::overload_cast<size_t, char *, size_t>(&MeCab::Lattice::enumNBestAsString))
+    .def("has_constraint", &MeCab::Lattice::has_constraint)
+    .def("boundary_constraint", &MeCab::Lattice::boundary_constraint)
+    .def("feature_constraint", &MeCab::Lattice::feature_constraint)
+    .def("set_boundary_constraint", &MeCab::Lattice::set_boundary_constraint)
+    .def("set_feature_constraint", &MeCab::Lattice::set_feature_constraint)
+    .def("set_result", &MeCab::Lattice::set_result)
+    .def("what", &MeCab::Lattice::what, py::return_value_policy::copy)
+    .def("set_what", &MeCab::Lattice::set_what)
+    .def("__len__",  &MeCab::Lattice::size)
+    .def("__iter__", [](const MeCab::Lattice &self) {
+      Iterator begin = Iterator(self.bos_node()->next);
       Iterator end = Iterator(self.eos_node());
-
       return py::make_iterator(begin, end);
-    }, py::keep_alive<0, 1>()) // 0 -> iterator, 1 -> self
+    },  py::keep_alive<0, 1>())
   ;
 }
