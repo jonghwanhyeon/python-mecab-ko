@@ -9,9 +9,9 @@ A python binding for mecab-ko
 
 ## Installation
 Using `pip`:
-```
-# Use the -v option to check the progress of MeCab installation
-pip install -v python-mecab-ko
+```bash
+# Use --verbose option to check the progress of MeCab installation
+$ pip install -v python-mecab-ko
 ```
 
 ## Usage
