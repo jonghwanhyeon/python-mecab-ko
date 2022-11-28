@@ -3,6 +3,8 @@
 #include <pybind11/pybind11.h>
 #include <mecab.h>
 
+#include "utils.h"
+
 namespace py = pybind11;
 
 class Iterator {
@@ -77,6 +79,13 @@ void initialize_lattice(py::module &m) {
       Iterator begin = Iterator(self.bos_node()->next);
       Iterator end = Iterator(self.eos_node());
       return py::make_iterator(begin, end);
-    },  py::keep_alive<0, 1>())
+    }, py::keep_alive<0, 1>()) // 0 -> iterator, 1 -> self
+    .def("__repr__", [](const MeCab::Lattice &self) {
+      std::stringstream stream;
+      stream << "Lattice(";
+      stream << "text=\"" << escape(self.sentence()) << "\"";
+      stream << ")";
+      return stream.str();
+    })
   ;
 }

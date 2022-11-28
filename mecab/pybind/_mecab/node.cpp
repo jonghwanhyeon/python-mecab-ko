@@ -1,5 +1,9 @@
+#include <sstream>
+
 #include <pybind11/pybind11.h>
 #include <mecab.h>
+
+#include "utils.h"
 
 namespace py = pybind11;
 
@@ -37,5 +41,13 @@ void initialize_node(py::module &m) {
     .def_readwrite("prob", &MeCab::Node::prob)
     .def_readwrite("wcost", &MeCab::Node::wcost)
     .def_readwrite("cost", &MeCab::Node::cost)
+    .def("__repr__", [](const MeCab::Node &self) {
+      std::stringstream stream;
+      stream << "Node(";
+      stream << "surface=\"" << escape(std::string(self.surface, self.length)) << "\", ";
+      stream << "feature=\"" << escape(self.feature) << "\"";
+      stream << ")";
+      return stream.str();
+    })
   ;
 }
