@@ -29,12 +29,12 @@ def _extract_feature(node: _mecab.Node) -> Feature:
     # - https://bitbucket.org/eunjeon/mecab-ko-dic/src/master/utils/dictionary/lexicon.py
 
     # feature = <pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
-    values = node.feature.split(',')
+    values = node.feature.split(",")
     assert len(values) == 8
 
-    values = [value if value != '*' else None for value in values]
+    values = [value if value != "*" else None for value in values]
     feature = dict(zip(Feature._fields, values))
-    feature['has_jongseong'] = {'T': True, 'F': False}.get(feature['has_jongseong'])
+    feature["has_jongseong"] = {"T": True, "F": False}.get(feature["has_jongseong"])
 
     return Feature(**feature)
 
@@ -44,11 +44,11 @@ class MeCabError(Exception):
 
 
 class MeCab:  # APIs are inspried by KoNLPy
-    def __init__(self, dicpath: str = ''):
-        argument = ''
+    def __init__(self, dicpath: str = ""):
+        argument = ""
 
-        if dicpath != '':
-            argument = '-d %s' % dicpath
+        if dicpath != "":
+            argument = "-d %s" % dicpath
 
         self.tagger = _mecab.Tagger(argument)
 
@@ -57,23 +57,17 @@ class MeCab:  # APIs are inspried by KoNLPy
         if not self.tagger.parse(lattice):
             raise MeCabError(self.tagger.what())
 
-        return [
-            (node.surface, _extract_feature(node))
-            for node in lattice
-        ]
+        return [(node.surface, _extract_feature(node)) for node in lattice]
 
     def pos(self, sentence: str) -> List[Tuple[str, str]]:
-        return [
-            (surface, feature.pos) for surface, feature in self.parse(sentence)
-        ]
+        return [(surface, feature.pos) for surface, feature in self.parse(sentence)]
 
     def morphs(self, sentence: str) -> List[str]:
-        return [
-            surface for surface, _ in self.parse(sentence)
-        ]
+        return [surface for surface, _ in self.parse(sentence)]
 
     def nouns(self, sentence: str) -> List[str]:
         return [
-            surface for surface, feature in self.parse(sentence)
-            if feature.pos.startswith('N')
+            surface
+            for surface, feature in self.parse(sentence)
+            if feature.pos.startswith("N")
         ]
