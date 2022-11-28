@@ -11,7 +11,7 @@ A python binding for mecab-ko
 Using `pip`:
 ```bash
 # Use --verbose option to check the progress of MeCab installation
-$ pip install -v python-mecab-ko
+$ pip install --verbose python-mecab-ko
 ```
 
 ## Usage
