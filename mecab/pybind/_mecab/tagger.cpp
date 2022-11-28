@@ -8,8 +8,8 @@ namespace py = pybind11;
 void initialize_tagger(py::module &m) {
   // Reference: https://taku910.github.io/mecab/doxygen/index.html
   py::class_<MeCab::Tagger>(m, "Tagger")
-    .def(py::init([](const char *argument) {
-      return std::unique_ptr<MeCab::Tagger>(MeCab::Tagger::create(argument));
+    .def(py::init([](const char *arguments) {
+      return std::unique_ptr<MeCab::Tagger>(MeCab::Tagger::create(arguments));
     }))
     .def("parse", [](MeCab::Tagger &self, MeCab::Lattice *lattice) {
       return self.parse(lattice);
