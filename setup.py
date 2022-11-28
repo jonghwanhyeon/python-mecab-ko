@@ -1,6 +1,5 @@
 import os
 import shutil
-import site
 import subprocess
 import sys
 from glob import glob
@@ -8,6 +7,9 @@ from pathlib import Path
 
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import find_packages, setup
+
+system_prefix_path = Path(sys.prefix)
+user_prefix_path = Path.home() / ".local"
 
 
 def get_mecab_include_directory() -> str:
@@ -35,11 +37,11 @@ class EnsureMeCabThenBuild(Pybind11Extension):
         super().__init__(*args, **kwargs)
 
     def _configure_path(self):
-        paths = [
-            os.path.join(sys.prefix, "bin"),
-            os.path.join(site.getuserbase(), "bin"),
+        prefix_paths = [
+            system_prefix_path / "bin",
+            user_prefix_path / "bin",
         ]
-        for path in paths:
+        for path in prefix_paths:
             os.environ["PATH"] += f"{os.pathsep}{path}"
 
     def _is_mecab_installed(self) -> bool:

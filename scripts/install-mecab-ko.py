@@ -1,14 +1,17 @@
 import os
-import site
 import subprocess
-from pathlib import Path
 import sys
 from contextlib import contextmanager
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 
 MECAB_KO_URL = 'https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-0.996-ko-0.9.2.tar.gz'
 MECAB_KO_DIC_URL = 'https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-ko-dic-2.1.1-20180720.tar.gz'
+
+
+system_prefix_path = Path(sys.prefix)
+user_prefix_path = Path.home() / ".local"
 
 
 def is_writable(directory: str) -> bool:
@@ -22,15 +25,14 @@ def is_writable(directory: str) -> bool:
     return os.access(path, os.W_OK)
 
 
-def guess_prefix() -> str:
-    candidates = [
-        sys.prefix,
-        site.getuserbase(),
+def guess_prefix() -> Path:
+    prefix_paths = [
+        system_prefix_path,
+        user_prefix_path,
     ]
-
-    for candidate in candidates:
-        if is_writable(candidate):
-            return candidate
+    for path in prefix_paths:
+        if is_writable(path):
+            return path
 
     raise RuntimeError("All prefixes are not writable")
 
@@ -99,18 +101,18 @@ def install(url, *args, environment=None):
 
 
 if __name__ == '__main__':
-    prefix = guess_prefix()
-    os.makedirs(prefix, exist_ok=True)
+    prefix_path = guess_prefix()
+    prefix_path.mkdir(parents=True, exist_ok=True)
 
     fancy_print('Installing mecab-ko...', color=32, bold=True)
-    install(MECAB_KO_URL, '--prefix={}'.format(prefix),
+    install(MECAB_KO_URL, f'--prefix={prefix_path}',
                           '--enable-utf8-only')
 
     fancy_print('Installing mecab-ko-dic...', color=32, bold=True)
-    mecab_config_path = os.path.join(prefix, 'bin', 'mecab-config')
-    install(MECAB_KO_DIC_URL, '--prefix={}'.format(prefix),
+    mecab_config_path = prefix_path / "bin" / "mecab-config"
+    install(MECAB_KO_DIC_URL, f'--prefix={prefix_path}',
                               '--with-charset=utf8',
-                              '--with-mecab-config={}'.format(mecab_config_path),
+                              f'--with-mecab-config={mecab_config_path}',
                               environment={
-                                  'LD_LIBRARY_PATH': os.path.join(prefix, 'lib'),
+                                  'LD_LIBRARY_PATH': str(prefix_path / "lib"),
                               })
