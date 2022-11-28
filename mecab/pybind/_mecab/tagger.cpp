@@ -9,7 +9,12 @@ void initialize_tagger(py::module &m) {
   // Reference: https://taku910.github.io/mecab/doxygen/classMeCab_1_1Tagger.html
   py::class_<MeCab::Tagger>(m, "Tagger")
     .def(py::init([](const char *arguments) {
-      return std::unique_ptr<MeCab::Tagger>(MeCab::Tagger::create(arguments));
+      MeCab::Tagger *tagger = MeCab::Tagger::create(arguments);
+      if (tagger == nullptr) {
+        throw pybind11::value_error(MeCab::getLastError());
+      }
+
+      return std::unique_ptr<MeCab::Tagger>(tagger);
     }))
     .def("parse", py::overload_cast<const char *>(&MeCab::Tagger::parse), py::return_value_policy::reference)
     .def("parse", py::overload_cast<MeCab::Lattice *>(&MeCab::Tagger::parse, py::const_))
