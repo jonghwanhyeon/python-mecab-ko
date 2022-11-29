@@ -52,7 +52,7 @@ def retrieve(url: str, filename: str):
         print(file=sys.stderr, flush=True)
 
 
-def install(url: str, *args, environment: Dict[str, str] = None):
+def install(url: str, *args):
     components = urlparse(url)
     filename = os.path.basename(components.path)
     retrieve(url, filename)
