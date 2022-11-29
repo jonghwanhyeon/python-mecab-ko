@@ -1,6 +1,10 @@
+from pathlib import Path
 from typing import List, NamedTuple, Optional, Tuple
 
 import _mecab
+import mecab_ko_dic
+
+mecabrc_path = Path(__file__).parent / "mecabrc"
 
 
 class Feature(NamedTuple):
@@ -45,11 +49,14 @@ class MeCabError(Exception):
 
 class MeCab:  # APIs are inspried by KoNLPy
     def __init__(self, dictionary_path: Optional[str] = None):
-        arguments = []
-        if dictionary_path is not None:
-            arguments.append(f"-d {dictionary_path}")
+        arguments = [
+            "--rcfile",
+            str(mecabrc_path),
+            "--dicdir",
+            mecab_ko_dic.DICDIR if dictionary_path is None else dictionary_path,
+        ]
 
-        self.tagger = _mecab.Tagger(" ".join(arguments))
+        self.tagger = _mecab.Tagger(arguments)
 
     def parse(self, sentence: str) -> List[Tuple[str, Feature]]:
         lattice = _create_lattice(sentence)
