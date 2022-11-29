@@ -4,7 +4,6 @@ A python binding for mecab-ko
 ## Prerequisites
 - C++14 compatible compiler
 - python3-dev
-- wget
 
 
 ## Installation

@@ -1,6 +1,8 @@
 import argparse
 import os
 import subprocess
+import time
+import urllib.request
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -39,20 +41,43 @@ def path_of(filename: str) -> str:
     raise ValueError("File {} not found".format(filename))
 
 
-def install(url: str, *args, environment: Dict[str, str]=None):
+def retrieve(url: str, filename: str):
+    print("Downloading", url)
+    response = urllib.request.urlopen(url)
+    content_length = response.getheader("Content-Length")
+    if content_length is not None:
+        content_length = int(content_length)
+
+    with open(filename, "wb") as output_file:
+        downloaded = 0
+        progress_time = time.time()
+        while True:
+            block = response.read(8192)
+            if not block:
+                break
+
+            output_file.write(block)
+            downloaded += len(block)
+
+            # Report progress every 0.5 seconds
+            interval = time.time() - progress_time
+            if interval > 0.5:
+                if content_length is not None:
+                    print(
+                        f"> {downloaded} bytes / {content_length} bytes "
+                        f"({(downloaded / content_length) * 100:.2f}%)",
+                        end="\r",
+                    )
+                progress_time = time.time()
+        print()
+
+
+def install(url: str, *args, environment: Dict[str, str] = None):
     def download(url: str):
         components = urlparse(url)
         filename = os.path.basename(components.path)
 
-        subprocess.run(
-            [
-                "wget",
-                "--progress=dot:binary",
-                "--output-document={}".format(filename),
-                url,
-            ],
-            check=True,
-        )
+        retrieve(url, filename)
         subprocess.run(["tar", "-xzf", filename], check=True)
 
     def configure(*args):
