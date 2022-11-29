@@ -59,7 +59,7 @@ def install(url: str, *args, environment: Dict[str, str] = None):
 
     subprocess.run(["tar", "-xz", "--strip-components=1", "-f", filename], check=True)
     subprocess.run(["./configure", *args], check=True)
-    subprocess.run(["make"], check=True, env=environment)
+    subprocess.run(["make", "--jobs", str(os.cpu_count())], check=True, env=environment)
 
 
 if __name__ == "__main__":
