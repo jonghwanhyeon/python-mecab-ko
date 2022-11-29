@@ -59,7 +59,7 @@ def build(url: str, *args):
 
     subprocess.run(["tar", "-xz", "--strip-components=1", "-f", filename], check=True)
     subprocess.run(["./configure", *args], check=True)
-    subprocess.run(["make", "--jobs", str(os.cpu_count())], check=True, env=environment)
+    subprocess.run(["make", "--jobs", str(os.cpu_count())], check=True)
 
 
 if __name__ == "__main__":
