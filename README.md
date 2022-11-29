@@ -8,6 +8,11 @@ Using `pip`:
 $ pip install python-mecab-ko
 ```
 
+This library provides a binary wheel on Linux and macOS systems, but if you want to build from source, you need the following prerequisites:
+- C++14 compatible compiler
+- Python header files
+
+
 ## Usage
 ```python
 import mecab
