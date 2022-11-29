@@ -52,7 +52,7 @@ def retrieve(url: str, filename: str):
         print(file=sys.stderr, flush=True)
 
 
-def install(url: str, *args):
+def build(url: str, *args):
     components = urlparse(url)
     filename = os.path.basename(components.path)
     retrieve(url, filename)
@@ -68,8 +68,8 @@ if __name__ == "__main__":
     prefix_path = Path(arguments.prefix)
     prefix_path.mkdir(parents=True, exist_ok=True)
 
-    print("Installing mecab-ko...", file=sys.stderr, flush=True)
-    install(
+    print("Building mecab-ko...", file=sys.stderr, flush=True)
+    build(
         MECAB_KO_URL.format(
             mecab_version=arguments.mecab_version,
             mecab_ko_version=arguments.mecab_ko_version,
