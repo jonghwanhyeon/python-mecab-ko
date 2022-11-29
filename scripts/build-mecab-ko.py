@@ -9,7 +9,8 @@ from typing import Dict
 from urllib.parse import urlparse
 
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
-
+CONFIG_GUESS_URL = "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
+CONFIG_SUB_URL = "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -58,6 +59,9 @@ def build(url: str, *args):
     retrieve(url, filename)
 
     subprocess.run(["tar", "-xz", "--strip-components=1", "-f", filename], check=True)
+    retrieve(CONFIG_GUESS_URL, "config.guess")
+    retrieve(CONFIG_SUB_URL, "config.sub")
+
     subprocess.run(["./configure", *args], check=True)
     subprocess.run(["make", "--jobs", str(os.cpu_count())], check=True)
 
