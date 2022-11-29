@@ -4,7 +4,6 @@ import subprocess
 import sys
 import time
 import urllib.request
-from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict
 from urllib.parse import urlparse
@@ -19,24 +18,6 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--mecab_ko_version", default="0.9.2")
 
     return parser.parse_args()
-
-
-@contextmanager
-def change_directory(directory: str):
-    original = os.path.abspath(os.getcwd())
-
-    os.chdir(directory)
-    yield
-
-    os.chdir(original)
-
-
-def path_of(filename: str) -> str:
-    for path, _, filenames in os.walk(os.getcwd()):
-        if filename in filenames:
-            return path
-
-    raise ValueError("File {} not found".format(filename))
 
 
 def retrieve(url: str, filename: str):
@@ -72,29 +53,13 @@ def retrieve(url: str, filename: str):
 
 
 def install(url: str, *args, environment: Dict[str, str] = None):
-    def download(url: str):
-        components = urlparse(url)
-        filename = os.path.basename(components.path)
+    components = urlparse(url)
+    filename = os.path.basename(components.path)
+    retrieve(url, filename)
 
-        retrieve(url, filename)
-        subprocess.run(["tar", "-xzf", filename], check=True)
-
-    def configure(*args):
-        with change_directory(path_of("configure")):
-            try:
-                subprocess.run(["./autogen.sh"])
-            except:
-                pass
-
-            subprocess.run(["./configure", *args], check=True)
-
-    def make():
-        with change_directory(path_of("Makefile")):
-            subprocess.run(["make"], check=True, env=environment)
-
-    download(url)
-    configure(*args)
-    make()
+    subprocess.run(["tar", "-xz", "--strip-components=1", "-f", filename], check=True)
+    subprocess.run(["./configure", *args], check=True)
+    subprocess.run(["make"], check=True, env=environment)
 
 
 if __name__ == "__main__":
