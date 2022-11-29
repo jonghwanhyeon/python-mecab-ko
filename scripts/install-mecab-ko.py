@@ -35,18 +35,6 @@ def path_of(filename):
     raise ValueError("File {} not found".format(filename))
 
 
-def fancy_print(*args, color=None, bold=False, **kwargs):
-    if bold:
-        print("\033[1m", end="")
-
-    if color:
-        print("\033[{}m".format(color), end="")
-
-    print(*args, **kwargs)
-
-    print("\033[0m", end="")  # reset
-
-
 def install(url, *args, environment=None):
     def download(url):
         components = urlparse(url)
@@ -88,10 +76,10 @@ if __name__ == "__main__":
     arguments = parse_arguments()
     prefix_path = Path(arguments.prefix)
 
-    fancy_print("Installing mecab-ko...", color=32, bold=True)
+    print("Installing mecab-ko...")
     install(MECAB_KO_URL, f"--prefix={prefix_path}", "--enable-utf8-only")
 
-    fancy_print("Installing mecab-ko-dic...", color=32, bold=True)
+    print("Installing mecab-ko-dic...")
     mecab_config_path = prefix_path / "bin" / "mecab-config"
     install(
         MECAB_KO_DIC_URL,
