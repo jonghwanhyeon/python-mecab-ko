@@ -1,6 +1,7 @@
 import argparse
 import os
 import subprocess
+import sys
 import time
 import urllib.request
 from contextlib import contextmanager
@@ -42,7 +43,7 @@ def path_of(filename: str) -> str:
 
 
 def retrieve(url: str, filename: str):
-    print("Downloading", url)
+    print("Downloading", url, file=sys.stderr)
     response = urllib.request.urlopen(url)
     content_length = response.getheader("Content-Length")
     if content_length is not None:
@@ -67,9 +68,10 @@ def retrieve(url: str, filename: str):
                         f"> {downloaded} bytes / {content_length} bytes "
                         f"({(downloaded / content_length) * 100:.2f}%)",
                         end="\r",
+                        file=sys.stderr,
                     )
                 progress_time = time.time()
-        print()
+        print(file=sys.stderr)
 
 
 def install(url: str, *args, environment: Dict[str, str] = None):
@@ -107,7 +109,7 @@ if __name__ == "__main__":
     prefix_path = Path(arguments.prefix)
     prefix_path.mkdir(parents=True, exist_ok=True)
 
-    print("Installing mecab-ko...")
+    print("Installing mecab-ko...", file=sys.stderr)
     install(
         MECAB_KO_URL.format(
             mecab_version=arguments.mecab_version,
@@ -117,7 +119,7 @@ if __name__ == "__main__":
         "--enable-utf8-only",
     )
 
-    print("Installing mecab-ko-dic...")
+    print("Installing mecab-ko-dic...", file=sys.stderr)
     install(
         MECAB_KO_DIC_URL.format(mecab_ko_dic_version=arguments.mecab_ko_dic_version),
         f"--prefix={prefix_path}",
