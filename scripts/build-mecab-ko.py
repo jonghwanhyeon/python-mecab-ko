@@ -91,7 +91,6 @@ def install(url: str, *args, environment: Dict[str, str] = None):
     def make():
         with change_directory(path_of("Makefile")):
             subprocess.run(["make"], check=True, env=environment)
-            subprocess.run(["make", "install"], check=True, env=environment)
 
     download(url)
     configure(*args)
