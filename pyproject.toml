@@ -1,3 +1,6 @@
+[project]
+requires-python = ">=3.7"
+
 [build-system]
 requires = [
     "setuptools>=42",
@@ -6,14 +9,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-# Skip building on CPython 3.6 on all platforms
-skip = "cp36-*"
-
-# Skip 32-bit builds
-skip = ["*-manylinux_i686"]
-
-# Skip muslinux builds
-skip = "*musllinux*"
-
-# Disable building PyPy wheels on all platforms
-skip = "pp*"
+skip = [
+    "*musllinux*", # Skip musllinux builds
+    "*-manylinux_i686", # Skip 32-bit builds
+    "pp*", # Disable building PyPy wheels on all platforms
+]
