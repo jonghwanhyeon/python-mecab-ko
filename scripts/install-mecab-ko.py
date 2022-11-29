@@ -1,6 +1,6 @@
+import argparse
 import os
 import subprocess
-import sys
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -11,33 +11,11 @@ MECAB_KO_URL = (
 )
 MECAB_KO_DIC_URL = "https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-ko-dic-2.1.1-20180720.tar.gz"
 
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--prefix", required=True)
 
-system_prefix_path = Path(sys.prefix)
-user_prefix_path = Path.home() / ".local"
-
-
-def is_writable(directory: str) -> bool:
-    path = Path(directory)
-    while not path.is_dir():
-        parent = path.parent
-        if path == parent:
-            break
-        path = parent
-
-    return os.access(path, os.W_OK)
-
-
-def guess_prefix() -> Path:
-    prefix_paths = [
-        system_prefix_path,
-        user_prefix_path,
-    ]
-    for path in prefix_paths:
-        if is_writable(path):
-            return path
-
-    raise RuntimeError("All prefixes are not writable")
-
+    return parser.parse_args()
 
 @contextmanager
 def change_directory(directory):
@@ -107,8 +85,8 @@ def install(url, *args, environment=None):
 
 
 if __name__ == "__main__":
-    prefix_path = guess_prefix()
-    prefix_path.mkdir(parents=True, exist_ok=True)
+    arguments = parse_arguments()
+    prefix_path = Path(arguments.prefix)
 
     fancy_print("Installing mecab-ko...", color=32, bold=True)
     install(MECAB_KO_URL, f"--prefix={prefix_path}", "--enable-utf8-only")

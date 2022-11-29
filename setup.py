@@ -1,5 +1,6 @@
 import os
 import shutil
+import site
 import subprocess
 import sys
 from glob import glob
@@ -8,19 +9,11 @@ from pathlib import Path
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import find_packages, setup
 
-system_prefix_path = Path(sys.prefix)
-user_prefix_path = Path.home() / ".local"
-
-
-def get_mecab_include_directory() -> str:
-    return subprocess.check_output(
-        ["mecab-config", "--inc-dir"], encoding="utf-8"
-    ).strip()
-
-def get_mecab_library_directory() -> str:
-    return subprocess.check_output(
-        ["mecab-config", "--libs-only-L"], encoding="utf-8"
-    ).strip()
+prefix_paths = [
+    Path(sys.prefix),
+    Path(site.getuserbase()),
+    Path.home() / ".local",
+]
 
 
 class EnsureMeCabThenBuild(Pybind11Extension):
@@ -30,30 +23,60 @@ class EnsureMeCabThenBuild(Pybind11Extension):
         if not self._is_mecab_installed():
             self._install_mecab()
 
-        kwargs["include_dirs"] = [get_mecab_include_directory()]
-        kwargs["library_dirs"] = [get_mecab_library_directory()]
+        kwargs["include_dirs"] = [self._get_mecab_include_directory()]
+        kwargs["library_dirs"] = [self._get_mecab_library_directory()]
         kwargs["libraries"] = ["mecab"]
-        kwargs["runtime_library_dirs"] = [get_mecab_library_directory()]
+        kwargs["runtime_library_dirs"] = [self._get_mecab_library_directory()]
         super().__init__(*args, **kwargs)
 
     def _configure_path(self):
-        prefix_paths = [
-            system_prefix_path / "bin",
-            user_prefix_path / "bin",
-        ]
         for path in prefix_paths:
-            os.environ["PATH"] += f"{os.pathsep}{path}"
+            os.environ["PATH"] += f"{os.pathsep}{path.absolute() / 'bin'}"
 
     def _is_mecab_installed(self) -> bool:
         return shutil.which("mecab") is not None
 
     def _install_mecab(self):
+        prefix_path = self._guess_prefix()
+
         setup_path = Path(__file__).parent.absolute()
         scripts_path = setup_path / "scripts"
         install_script_path = scripts_path / "install-mecab-ko.py"
         subprocess.check_call(
-            [sys.executable, str(install_script_path)], cwd=scripts_path
+            [
+                sys.executable,
+                str(install_script_path),
+                "--prefix",
+                str(prefix_path.absolute()),
+            ]
         )
+
+    def _get_mecab_include_directory(self) -> str:
+        return subprocess.check_output(
+            ["mecab-config", "--inc-dir"], encoding="utf-8"
+        ).strip()
+
+    def _get_mecab_library_directory(self) -> str:
+        return subprocess.check_output(
+            ["mecab-config", "--libs-only-L"], encoding="utf-8"
+        ).strip()
+
+    def _is_writable(self, path: Path) -> bool:
+        # If path is not directory, find closest parent direcotry
+        while not path.is_dir():
+            parent = path.parent
+            if path == parent:
+                break
+            path = parent
+
+        return os.access(path, os.W_OK)
+
+    def _guess_prefix(self) -> Path:
+        for path in prefix_paths:
+            if self._is_writable(path):
+                return path
+
+        raise RuntimeError("All prefix candidates are not writable")
 
 
 with open("README.md", "r", encoding="utf-8") as input_file:
