@@ -6,16 +6,19 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 
-MECAB_KO_URL = (
-    "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-0.996-ko-0.9.2.tar.gz"
-)
-MECAB_KO_DIC_URL = "https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-ko-dic-2.1.1-20180720.tar.gz"
+MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
+MECAB_KO_DIC_URL = "https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-ko-dic-{mecab_ko_dic_version}.tar.gz"
+
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--prefix", required=True)
+    parser.add_argument("--mecab_version", default="0.996")
+    parser.add_argument("--mecab_ko_version", default="0.9.2")
+    parser.add_argument("--mecab_ko_dic_version", default="2.1.1-20180720")
 
     return parser.parse_args()
+
 
 @contextmanager
 def change_directory(directory):
@@ -74,19 +77,27 @@ def install(url, *args, environment=None):
 
 if __name__ == "__main__":
     arguments = parse_arguments()
+
     prefix_path = Path(arguments.prefix)
+    prefix_path.mkdir(parents=True, exist_ok=True)
 
     print("Installing mecab-ko...")
-    install(MECAB_KO_URL, f"--prefix={prefix_path}", "--enable-utf8-only")
+    install(
+        MECAB_KO_URL.format(
+            mecab_version=arguments.mecab_version,
+            mecab_ko_version=arguments.mecab_ko_version,
+        ),
+        f"--prefix={prefix_path}",
+        "--enable-utf8-only",
+    )
 
     print("Installing mecab-ko-dic...")
-    mecab_config_path = prefix_path / "bin" / "mecab-config"
     install(
-        MECAB_KO_DIC_URL,
+        MECAB_KO_DIC_URL.format(mecab_ko_dic_version=arguments.mecab_ko_dic_version),
         f"--prefix={prefix_path}",
         "--with-charset=utf8",
-        f"--with-mecab-config={mecab_config_path}",
+        f"--with-mecab-config={prefix_path / 'bin' / 'mecab-config'}",
         environment={
-            "LD_LIBRARY_PATH": str(prefix_path / "lib"),
+            "LD_LIBRARY_PATH": f"{prefix_path / 'lib'}",
         },
     )
