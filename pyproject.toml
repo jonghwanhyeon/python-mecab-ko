@@ -9,5 +9,11 @@ build-backend = "setuptools.build_meta"
 # Skip building on CPython 3.6 on all platforms
 skip = "cp36-*"
 
+# Skip 32-bit builds
+skip = ["*-manylinux_i686"]
+
+# Skip muslinux builds
+skip = "*musllinux*"
+
 # Disable building PyPy wheels on all platforms
 skip = "pp*"
