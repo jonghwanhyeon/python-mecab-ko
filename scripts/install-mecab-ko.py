@@ -116,6 +116,7 @@ if __name__ == "__main__":
             mecab_ko_version=arguments.mecab_ko_version,
         ),
         f"--prefix={prefix_path}",
+        "--with-pic",
         "--enable-utf8-only",
     )
 
