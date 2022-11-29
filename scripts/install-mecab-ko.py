@@ -4,6 +4,7 @@ import subprocess
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Dict
 from urllib.parse import urlparse
 
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
@@ -21,7 +22,7 @@ def parse_arguments() -> argparse.Namespace:
 
 
 @contextmanager
-def change_directory(directory):
+def change_directory(directory: str):
     original = os.path.abspath(os.getcwd())
 
     os.chdir(directory)
@@ -30,7 +31,7 @@ def change_directory(directory):
     os.chdir(original)
 
 
-def path_of(filename):
+def path_of(filename: str) -> str:
     for path, _, filenames in os.walk(os.getcwd()):
         if filename in filenames:
             return path
@@ -38,8 +39,8 @@ def path_of(filename):
     raise ValueError("File {} not found".format(filename))
 
 
-def install(url, *args, environment=None):
-    def download(url):
+def install(url: str, *args, environment: Dict[str, str]=None):
+    def download(url: str):
         components = urlparse(url)
         filename = os.path.basename(components.path)
 
