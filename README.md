@@ -1,15 +1,15 @@
 # python-mecab-ko
-A python binding for mecab-ko
+A python binding for mecab-ko, providing mecab-ko installation via pip.
 
 ## Prerequisites
 - C++14 compatible compiler
-- python3-dev
+- Python header files
 
 
 ## Installation
 Using `pip`:
 ```bash
-# Use --verbose option to check the progress of MeCab installation
+# Use --verbose option to check the progress of mecab-ko installation
 $ pip install --verbose python-mecab-ko
 ```
 
