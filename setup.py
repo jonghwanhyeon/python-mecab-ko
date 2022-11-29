@@ -86,6 +86,7 @@ with TemporaryDirectory() as working_directory:
         zip_safe=False,
         python_requires=">=3.7",
         packages=find_packages(),
+        install_requires=["mecab_ko_dic"],
         package_data={"mecab": ["mecabrc"]},
         data_files=[("scripts", ["scripts/build-mecab-ko.py"])],
         cmdclass={"build_ext": build_ext},
