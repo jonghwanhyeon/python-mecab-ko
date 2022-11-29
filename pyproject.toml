@@ -4,3 +4,7 @@ requires = [
     "pybind11>=2.10.0",
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+# Skip building on CPython 3.6 on all platforms
+skip = "cp36-*"
