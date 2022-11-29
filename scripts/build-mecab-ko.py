@@ -6,7 +6,6 @@ import time
 import urllib.request
 from contextlib import contextmanager
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Dict
 from urllib.parse import urlparse
 
@@ -94,11 +93,9 @@ def install(url: str, *args, environment: Dict[str, str] = None):
             subprocess.run(["make"], check=True, env=environment)
             subprocess.run(["make", "install"], check=True, env=environment)
 
-    with TemporaryDirectory() as directory:
-        with change_directory(directory):
-            download(url)
-            configure(*args)
-            make()
+    download(url)
+    configure(*args)
+    make()
 
 
 if __name__ == "__main__":
