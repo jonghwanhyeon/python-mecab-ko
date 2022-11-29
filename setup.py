@@ -96,10 +96,11 @@ with TemporaryDirectory() as working_directory:
                 sources=sorted(glob("mecab/pybind/**/*.cpp", recursive=True)),
                 include_dirs=[
                     "mecab/pybind/_mecab",
-                    os.path.join(working_directory, "src")
+                    os.path.join(working_directory, "src"),
                 ],
-                library_dirs=[os.path.join(working_directory, "src", ".libs")],
-                libraries=[":libmecab.a"],
+                extra_objects=[
+                    os.path.join(working_directory, "src", ".libs", "libmecab.a")
+                ],
             ),
         ],
     )
