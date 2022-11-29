@@ -11,7 +11,6 @@ from typing import Dict
 from urllib.parse import urlparse
 
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
-MECAB_KO_DIC_URL = "https://bitbucket.org/eunjeon/mecab-ko-dic/downloads/mecab-ko-dic-{mecab_ko_dic_version}.tar.gz"
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -19,7 +18,6 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--prefix", required=True)
     parser.add_argument("--mecab_version", default="0.996")
     parser.add_argument("--mecab_ko_version", default="0.9.2")
-    parser.add_argument("--mecab_ko_dic_version", default="2.1.1-20180720")
 
     return parser.parse_args()
 
@@ -118,15 +116,4 @@ if __name__ == "__main__":
         f"--prefix={prefix_path}",
         "--with-pic",
         "--enable-utf8-only",
-    )
-
-    print("Installing mecab-ko-dic...", file=sys.stderr, flush=True)
-    install(
-        MECAB_KO_DIC_URL.format(mecab_ko_dic_version=arguments.mecab_ko_dic_version),
-        f"--prefix={prefix_path}",
-        "--with-charset=utf8",
-        f"--with-mecab-config={prefix_path / 'bin' / 'mecab-config'}",
-        environment={
-            "LD_LIBRARY_PATH": f"{prefix_path / 'lib'}",
-        },
     )
