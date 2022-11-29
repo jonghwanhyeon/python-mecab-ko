@@ -1,12 +1,13 @@
 import os
-import shutil
 import site
 import subprocess
 import sys
 from glob import glob
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from pybind11.setup_helpers import Pybind11Extension, build_ext
+from pybind11.setup_helpers import Pybind11Extension
+from pybind11.setup_helpers import build_ext as _build_ext
 from setuptools import find_packages, setup
 
 prefix_paths = [
@@ -85,8 +86,6 @@ with TemporaryDirectory() as working_directory:
         zip_safe=False,
         python_requires=">=3.7",
         packages=find_packages(),
-        install_requires=["mecab_ko_dc"],
-        package_data={"mecab": ["mecabrc"]},
         data_files=[("scripts", ["scripts/build-mecab-ko.py"])],
         cmdclass={"build_ext": build_ext},
         ext_modules=[
