@@ -7,8 +7,8 @@ except ImportError:
     # ImportError: dlopen(...): Symbol not found: _iconv
     # Strange workaround: https://github.com/pymssql/pymssql/issues/705
     # This only happens on macOS
-    import _mecab
     import _scproxy
+    import _mecab
 
 mecabrc_path = Path(__file__).parent / "mecabrc"
 
