@@ -5,10 +5,10 @@ try:
     import _mecab
 except ImportError:
     # ImportError: dlopen(...): Symbol not found: _iconv
-    ## Strange workaround: https://github.com/pymssql/pymssql/issues/705
-    ## This only happens on macOS
-    import _scproxy
+    # Strange workaround: https://github.com/pymssql/pymssql/issues/705
+    # This only happens on macOS
     import _mecab
+    import _scproxy
 
 mecabrc_path = Path(__file__).parent / "mecabrc"
 
@@ -44,7 +44,8 @@ def _extract_feature(node: _mecab.Node) -> Feature:
 
     values = [value if value != "*" else None for value in values]
     feature = dict(zip(Feature._fields, values))
-    feature["has_jongseong"] = {"T": True, "F": False}.get(feature["has_jongseong"])
+    feature["has_jongseong"] = {"T": True, "F": False}.get(
+        feature["has_jongseong"])
 
     return Feature(**feature)
 
@@ -60,7 +61,8 @@ class MeCab:  # APIs are inspried by KoNLPy
                 import mecab_ko_dic
                 dictionary_directory = mecab_ko_dic.DICDIR
             except ImportError:
-                raise RuntimeError("`mecab_ko_dic` not found. Please run `pip install mecab_ko_dic`")
+                raise RuntimeError(
+                    "`mecab_ko_dic` not found. Please run `pip install mecab_ko_dic`")
 
         arguments = [
             "--rcfile", str(mecabrc_path),
