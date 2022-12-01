@@ -1,16 +1,17 @@
 import argparse
 import os
+import platform
 import subprocess
 import sys
 import time
 import urllib.request
 from pathlib import Path
-from typing import Dict
 from urllib.parse import urlparse
 
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
 CONFIG_GUESS_URL = "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
 CONFIG_SUB_URL = "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
+
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -53,17 +54,24 @@ def retrieve(url: str, filename: str):
         print(file=sys.stderr, flush=True)
 
 
-def build(url: str, *args):
+def download(url: str):
     components = urlparse(url)
     filename = os.path.basename(components.path)
     retrieve(url, filename)
 
-    subprocess.run(["tar", "-xz", "--strip-components=1", "-f", filename], check=True)
+    subprocess.run(["tar", "-xz", "--strip-components=1",
+                   "-f", filename], check=True)
     retrieve(CONFIG_GUESS_URL, "config.guess")
     retrieve(CONFIG_SUB_URL, "config.sub")
 
+
+def configure(*args):
     subprocess.run(["./configure", *args], check=True)
-    subprocess.run(["make", "--jobs", str(os.cpu_count())], check=True)
+
+
+def make(*args):
+    print(["make", "--jobs", str(os.cpu_count()), *args])
+    subprocess.run(["make", "--jobs", str(os.cpu_count()), *args], check=True)
 
 
 if __name__ == "__main__":
@@ -73,12 +81,15 @@ if __name__ == "__main__":
     prefix_path.mkdir(parents=True, exist_ok=True)
 
     print("Building mecab-ko...", file=sys.stderr, flush=True)
-    build(
-        MECAB_KO_URL.format(
-            mecab_version=arguments.mecab_version,
-            mecab_ko_version=arguments.mecab_ko_version,
-        ),
-        f"--prefix={prefix_path}",
-        "--with-pic",
-        "--enable-utf8-only",
-    )
+    download(MECAB_KO_URL.format(
+        mecab_version=arguments.mecab_version,
+        mecab_ko_version=arguments.mecab_ko_version,
+    ))
+
+    configure(f"--prefix={prefix_path}",
+              "--enable-utf8-only")
+
+    if platform.system() == "Darwin":
+        make('CXXFLAGS=-O3 -Wall -arch arm64 -arch x86_64')
+    else:
+        make()
