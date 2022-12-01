@@ -87,6 +87,7 @@ if __name__ == "__main__":
     ))
 
     configure(f"--prefix={prefix_path}",
+              "--with-pic",
               "--enable-utf8-only")
 
     if platform.system() == "Darwin":
