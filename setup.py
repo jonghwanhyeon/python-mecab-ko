@@ -65,7 +65,7 @@ with TemporaryDirectory() as working_directory:
 
     setup(
         name="python-mecab-ko",
-        version="1.2.2",
+        version="1.2.3",
         url="https://github.com/jonghwanhyeon/python-mecab-ko",
         author="Jonghwan Hyeon",
         author_email="hyeon0145@gmail.com",
