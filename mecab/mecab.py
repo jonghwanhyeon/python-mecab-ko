@@ -37,8 +37,7 @@ def _extract_feature(node: _mecab.Node) -> Feature:
 
     values = [value if value != "*" else None for value in values]
     feature = dict(zip(Feature._fields, values))
-    feature["has_jongseong"] = {"T": True, "F": False}.get(
-        feature["has_jongseong"])
+    feature["has_jongseong"] = {"T": True, "F": False}.get(feature["has_jongseong"])
 
     return Feature(**feature)
 
@@ -52,14 +51,18 @@ class MeCab:  # APIs are inspried by KoNLPy
         if dictionary_directory is None:
             try:
                 import mecab_ko_dic
+
                 dictionary_directory = mecab_ko_dic.DICDIR
             except ImportError:
                 raise RuntimeError(
-                    "`mecab_ko_dic` not found. Please run `pip install mecab_ko_dic`")
+                    "`mecab_ko_dic` not found. Please run `pip install mecab_ko_dic`"
+                )
 
         arguments = [
-            "--rcfile", str(mecabrc_path),
-            "--dicdir", dictionary_directory,
+            "--rcfile",
+            str(mecabrc_path),
+            "--dicdir",
+            dictionary_directory,
         ]
 
         self.tagger = _mecab.Tagger(arguments)
