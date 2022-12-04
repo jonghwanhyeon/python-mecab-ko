@@ -1,4 +1,5 @@
 import os
+import platform
 import site
 import subprocess
 import sys
@@ -98,6 +99,7 @@ with TemporaryDirectory() as working_directory:
                     "mecab/pybind/_mecab",
                     os.path.join(working_directory, "src"),
                 ],
+                libraries=["iconv"] if platform.system() == "Darwin" else [],
                 extra_objects=[
                     os.path.join(working_directory, "src", ".libs", "libmecab.a")
                 ],
