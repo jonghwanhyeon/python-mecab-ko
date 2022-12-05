@@ -5,7 +5,7 @@ from typing import List, NamedTuple, Optional, Tuple
 
 import _mecab
 
-mecabrc_path = Path(__file__).parent / "mecabrc"
+_mecabrc_path = Path(__file__).parent / "mecabrc"
 
 
 class Feature(NamedTuple):
@@ -68,7 +68,7 @@ class MeCab:  # APIs are inspried by KoNLPy
 
         arguments = [
             "--rcfile",
-            str(mecabrc_path),
+            str(_mecabrc_path),
             "--dicdir",
             dictionary_directory,
         ]
