@@ -8,6 +8,14 @@ import _mecab
 _mecabrc_path = Path(__file__).parent / "mecabrc"
 
 
+def _create_lattice(sentence: str) -> _mecab.Lattice:
+    lattice = _mecab.Lattice()
+    lattice.add_request_type(_mecab.MECAB_ALLOCATE_SENTENCE)  # Required
+    lattice.set_sentence(sentence)
+
+    return lattice
+
+
 class Feature(NamedTuple):
     pos: str
     semantic: Optional[str]
@@ -40,14 +48,6 @@ class Feature(NamedTuple):
             feature["has_jongseong"] = False
 
         return Feature(**feature)
-
-
-def _create_lattice(sentence: str) -> _mecab.Lattice:
-    lattice = _mecab.Lattice()
-    lattice.add_request_type(_mecab.MECAB_ALLOCATE_SENTENCE)  # Required
-    lattice.set_sentence(sentence)
-
-    return lattice
 
 
 class MeCabError(Exception):
