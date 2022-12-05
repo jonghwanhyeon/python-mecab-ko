@@ -47,7 +47,7 @@ class Feature(NamedTuple):
         elif feature["has_jongseong"] == "F":
             feature["has_jongseong"] = False
 
-        return Feature(**feature)
+        return cls(**feature)
 
 
 class MeCabError(Exception):
