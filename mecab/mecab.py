@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from typing import List, NamedTuple, Optional, Tuple
 
@@ -8,13 +10,36 @@ mecabrc_path = Path(__file__).parent / "mecabrc"
 
 class Feature(NamedTuple):
     pos: str
-    semantic: str
-    has_jongseong: bool
-    reading: str
-    type: str
-    start_pos: str
-    end_pos: str
-    exprssion: str
+    semantic: Optional[str]
+    has_jongseong: Optional[bool]
+    reading: Optional[str]
+    type: Optional[str]
+    start_pos: Optional[str]
+    end_pos: Optional[str]
+    exprssion: Optional[str]
+
+    @classmethod
+    def _from_node(cls, node: _mecab.Node) -> Feature:
+        # Reference:
+        # - http://taku910.github.io/mecab/learn.html
+        # - https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY
+        # - https://bitbucket.org/eunjeon/mecab-ko-dic/src/master/utils/dictionary/lexicon.py
+
+        # feature = <pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
+        values = node.feature.split(",")
+        assert len(values) == 8
+
+        feature = {
+            field: value if value != "*" else None
+            for field, value in zip(Feature._fields, values)
+        }
+
+        if feature["has_jongseong"] == "T":
+            feature["has_jongseong"] = True
+        elif feature["has_jongseong"] == "F":
+            feature["has_jongseong"] = False
+
+        return Feature(**feature)
 
 
 def _create_lattice(sentence: str) -> _mecab.Lattice:
@@ -23,23 +48,6 @@ def _create_lattice(sentence: str) -> _mecab.Lattice:
     lattice.set_sentence(sentence)
 
     return lattice
-
-
-def _extract_feature(node: _mecab.Node) -> Feature:
-    # Reference:
-    # - http://taku910.github.io/mecab/learn.html
-    # - https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY
-    # - https://bitbucket.org/eunjeon/mecab-ko-dic/src/master/utils/dictionary/lexicon.py
-
-    # feature = <pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
-    values = node.feature.split(",")
-    assert len(values) == 8
-
-    values = [value if value != "*" else None for value in values]
-    feature = dict(zip(Feature._fields, values))
-    feature["has_jongseong"] = {"T": True, "F": False}.get(feature["has_jongseong"])
-
-    return Feature(**feature)
 
 
 class MeCabError(Exception):
@@ -72,7 +80,7 @@ class MeCab:  # APIs are inspried by KoNLPy
         if not self.tagger.parse(lattice):
             raise MeCabError(self.tagger.what())
 
-        return [(node.surface, _extract_feature(node)) for node in lattice]
+        return [(node.surface, Feature._from_node(node)) for node in lattice]
 
     def pos(self, sentence: str) -> List[Tuple[str, str]]:
         return [(surface, feature.pos) for surface, feature in self.parse(sentence)]
