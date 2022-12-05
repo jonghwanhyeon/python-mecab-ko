@@ -62,7 +62,7 @@ class MeCab:  # APIs are inspried by KoNLPy
 
                 dictionary_directory = mecab_ko_dic.DICDIR
             except ImportError:
-                raise RuntimeError(
+                raise MeCabError(
                     "`mecab_ko_dic` not found. Please run `pip install mecab_ko_dic`"
                 )
 
