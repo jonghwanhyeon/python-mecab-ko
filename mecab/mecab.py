@@ -54,7 +54,7 @@ class MeCabError(Exception):
     pass
 
 
-class MeCab:  # APIs are inspried by KoNLPy
+class MeCab:  # APIs are inspired by KoNLPy
     def __init__(self, dictionary_directory: Optional[str] = None):
         if dictionary_directory is None:
             try:
