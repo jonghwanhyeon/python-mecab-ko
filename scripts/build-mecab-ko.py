@@ -6,6 +6,7 @@ import sys
 import time
 import urllib.request
 from pathlib import Path
+from typing import Optional
 from urllib.parse import urlparse
 
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
@@ -23,6 +24,13 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def retrieve(url: str, filename: str):
+    def progress(current: int, total: Optional[int] = None):
+        sys.stderr.write(f"> {current} bytes")
+        if total is not None:
+            sys.stderr.write(f" / {total} bytes")
+            sys.stderr.write(f"({(current / total) * 100:.2f}%)")
+        sys.stderr.write("\r")
+
     sys.stderr.write(f"Downloading {url}\n")
     response = urllib.request.urlopen(url)
     content_length = response.getheader("Content-Length")
@@ -43,13 +51,10 @@ def retrieve(url: str, filename: str):
             # Report progress every 0.5 seconds
             interval = time.time() - progress_time
             if interval > 0.5:
-                if content_length is not None:
-                    sys.stderr.write(
-                        f"> {downloaded} bytes / {content_length} bytes "
-                        f"({(downloaded / content_length) * 100:.2f}%)"
-                        "\r"
-                    )
+                progress(downloaded, content_length)
                 progress_time = time.time()
+
+        progress(downloaded, content_length)
         sys.stderr.write("\n")
 
 
