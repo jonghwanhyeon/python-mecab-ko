@@ -11,6 +11,7 @@ from typing import Optional
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import find_packages, setup
 
+
 prefix_paths = [
     Path(sys.prefix),
     Path(site.getuserbase()),
