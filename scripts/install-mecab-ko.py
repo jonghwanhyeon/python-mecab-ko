@@ -17,7 +17,6 @@ CONFIG_SUB_URL = (
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--install", action="store_true")
     parser.add_argument("--prefix", required=True)
     parser.add_argument("--mecab_version", default="0.996")
     parser.add_argument("--mecab_ko_version", default="0.9.2")
@@ -109,6 +108,5 @@ if __name__ == "__main__":
     sys.stderr.write("Building mecab-ko...\n")
     build(prefix_path)
 
-    if arguments.install:
-        sys.stderr.write("Installing mecab-ko...\n")
-        install()
+    sys.stderr.write("Installing mecab-ko...\n")
+    install()

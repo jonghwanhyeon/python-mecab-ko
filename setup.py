@@ -71,14 +71,13 @@ class MeCabExtension(Pybind11Extension):
     def _install_mecab(self):
         setup_path = Path(__file__).parent.absolute()
         scripts_path = setup_path / "scripts"
-        build_script_path = scripts_path / "build-mecab-ko.py"
+        install_script_path = scripts_path / "install-mecab-ko.py"
 
         with TemporaryDirectory() as working_directory:
             subprocess.run(
                 [
                     sys.executable,
-                    str(build_script_path),
-                    "--install",
+                    str(install_script_path),
                     "--prefix",
                     str(guess_prefix()),
                 ],
@@ -116,7 +115,7 @@ setup(
     packages=find_packages(),
     install_requires=["mecab_ko_dic"],
     package_data={"mecab": ["mecabrc"]},
-    data_files=[("scripts", ["scripts/build-mecab-ko.py"])],
+    data_files=[("scripts", ["scripts/install-mecab-ko.py"])],
     cmdclass={"build_ext": build_ext},
     ext_modules=[
         MeCabExtension(
