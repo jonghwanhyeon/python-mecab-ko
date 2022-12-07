@@ -8,9 +8,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Optional
 
-from pybind11.setup_helpers import Pybind11Extension, build_ext
+from pybind11.setup_helpers import Pybind11Extension
+from pybind11.setup_helpers import build_ext as _build_ext
 from setuptools import find_packages, setup
-
 
 prefix_paths = [
     Path(sys.prefix),
@@ -57,17 +57,18 @@ class Executable:
         return shutil.which(self._command, path=os.pathsep.join(paths))
 
 
-class MeCabExtension(Pybind11Extension):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class build_ext(_build_ext):
+    def build_extension(self, extension):
+        if extension.name == "_mecab":
+            mecab_config = Executable("mecab-config")
+            if not mecab_config.exists():
+                self._install_mecab()
 
-        mecab_config = Executable("mecab-config")
-        if not mecab_config.exists():
-            self._install_mecab()
+            extension.include_dirs.append(mecab_config("--inc-dir"))
+            extension.library_dirs.append(mecab_config("--libs-only-L"))
+            extension.libraries.append("mecab")
 
-        self.include_dirs.append(mecab_config("--inc-dir"))
-        self.library_dirs.append(mecab_config("--libs-only-L"))
-        self.libraries.append("mecab")
+        super().build_extension(extension)
 
     def _install_mecab(self):
         setup_path = Path(__file__).parent.absolute()
@@ -118,7 +119,7 @@ setup(
     data_files=[("scripts", ["scripts/install-mecab-ko.py"])],
     cmdclass={"build_ext": build_ext},
     ext_modules=[
-        MeCabExtension(
+        Pybind11Extension(
             name="_mecab",
             sources=sorted(glob("mecab/pybind/**/*.cpp", recursive=True)),
             include_dirs=["mecab/pybind/_mecab"],
