@@ -57,6 +57,14 @@ def download(url: str, filename: str):
         sys.stderr.write("\n")
 
 
+def configure(*args):
+    subprocess.run(["./configure", *args], check=True)
+
+
+def make(*args):
+    subprocess.run(["make", *args], check=True)
+
+
 def fetch(url: str):
     download(url, "mecab-ko.tar.gz")
     subprocess.run(["tar", "-xz", "--strip-components=1", "-f", "mecab-ko.tar.gz"], check=True)
@@ -65,12 +73,16 @@ def fetch(url: str):
     download(CONFIG_SUB_URL, "config.sub")
 
 
-def configure(*args):
-    subprocess.run(["./configure", *args], check=True)
+def build(prefix_path: Path):
+    configure(f"--prefix={prefix_path}",
+              "--with-pic",
+              "--enable-utf8-only")
 
-
-def make(*args):
-    subprocess.run(["make", *args], check=True)
+    options = ["--jobs", str(os.cpu_count())]
+    if platform.system() == "Darwin":
+        # Add -arch options to support universal binary
+        options.append("CXXFLAGS=-O3 -Wall -arch x86_64 -arch arm64")
+    make(*options)
 
 
 if __name__ == "__main__":
@@ -85,11 +97,4 @@ if __name__ == "__main__":
         mecab_ko_version=arguments.mecab_ko_version,
     ))
 
-    configure(f"--prefix={prefix_path}",
-              "--with-pic",
-              "--enable-utf8-only")
-
-    if platform.system() == "Darwin":
-        make("--jobs", str(os.cpu_count()), 'CXXFLAGS=-O3 -Wall -arch arm64 -arch x86_64')
-    else:
-        make("--jobs", str(os.cpu_count()))
+    build(prefix_path)
