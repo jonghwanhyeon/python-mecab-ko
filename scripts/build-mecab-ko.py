@@ -10,7 +10,9 @@ from typing import Optional
 
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
 CONFIG_GUESS_URL = "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
-CONFIG_SUB_URL = "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
+CONFIG_SUB_URL = (
+    "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
+)
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -68,16 +70,16 @@ def make(*args):
 
 def fetch(url: str):
     download(url, "mecab-ko.tar.gz")
-    subprocess.run(["tar", "-xz", "--strip-components=1", "-f", "mecab-ko.tar.gz"], check=True)
+    subprocess.run(
+        ["tar", "-xz", "--strip-components=1", "-f", "mecab-ko.tar.gz"], check=True
+    )
 
     download(CONFIG_GUESS_URL, "config.guess")
     download(CONFIG_SUB_URL, "config.sub")
 
 
 def build(prefix_path: Path):
-    configure(f"--prefix={prefix_path}",
-              "--with-pic",
-              "--enable-utf8-only")
+    configure(f"--prefix={prefix_path}", "--with-pic", "--enable-utf8-only")
 
     options = ["--jobs", str(os.cpu_count())]
     if platform.system() == "Darwin":
@@ -97,10 +99,12 @@ if __name__ == "__main__":
     prefix_path.mkdir(parents=True, exist_ok=True)
 
     sys.stderr.write("Downloading mecab-ko...\n")
-    fetch(MECAB_KO_URL.format(
-        mecab_version=arguments.mecab_version,
-        mecab_ko_version=arguments.mecab_ko_version,
-    ))
+    fetch(
+        MECAB_KO_URL.format(
+            mecab_version=arguments.mecab_version,
+            mecab_ko_version=arguments.mecab_ko_version,
+        )
+    )
 
     sys.stderr.write("Building mecab-ko...\n")
     build(prefix_path)
