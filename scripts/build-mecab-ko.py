@@ -23,7 +23,7 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def retrieve(url: str, filename: str):
+def download(url: str, filename: str):
     def progress(current: int, total: Optional[int] = None):
         sys.stderr.write(f"> {current} bytes")
         if total is not None:
@@ -58,15 +58,15 @@ def retrieve(url: str, filename: str):
         sys.stderr.write("\n")
 
 
-def download(url: str):
+def fetch(url: str):
     components = urlparse(url)
     filename = os.path.basename(components.path)
-    retrieve(url, filename)
+    download(url, filename)
 
     subprocess.run(["tar", "-xz", "--strip-components=1",
                    "-f", filename], check=True)
-    retrieve(CONFIG_GUESS_URL, "config.guess")
-    retrieve(CONFIG_SUB_URL, "config.sub")
+    download(CONFIG_GUESS_URL, "config.guess")
+    download(CONFIG_SUB_URL, "config.sub")
 
 
 def configure(*args):
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     prefix_path.mkdir(parents=True, exist_ok=True)
 
     sys.stderr.write("Building mecab-ko...\n")
-    download(MECAB_KO_URL.format(
+    fetch(MECAB_KO_URL.format(
         mecab_version=arguments.mecab_version,
         mecab_ko_version=arguments.mecab_ko_version,
     ))
