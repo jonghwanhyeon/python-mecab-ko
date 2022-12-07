@@ -5,7 +5,6 @@ import subprocess
 import sys
 import time
 import urllib.request
-from pathlib import Path
 from typing import Optional
 
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
@@ -17,7 +16,7 @@ CONFIG_SUB_URL = (
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--prefix", required=True)
+    parser.add_argument("--prefix")
     parser.add_argument("--mecab_version", default="0.996")
     parser.add_argument("--mecab_ko_version", default="0.9.2")
 
@@ -77,14 +76,17 @@ def fetch(url: str):
     download(CONFIG_SUB_URL, "config.sub")
 
 
-def build(prefix_path: Path):
-    configure(f"--prefix={prefix_path}", "--with-pic", "--enable-utf8-only")
+def build(prefix: Optional[str] = None):
+    configure_options = ["--with-pic", "--enable-utf8-only"]
+    if prefix is not None:
+        configure_options.append(f"--prefix={prefix}")
+    configure(*configure_options)
 
-    options = ["--jobs", str(os.cpu_count())]
+    build_options = ["--jobs", str(os.cpu_count())]
     if platform.system() == "Darwin":
         # Add -arch options to support universal binary
-        options.append("CXXFLAGS=-O3 -Wall -arch x86_64 -arch arm64")
-    make(*options)
+        build_options.append("CXXFLAGS=-O3 -Wall -arch x86_64 -arch arm64")
+    make(*build_options)
 
 
 def install():
@@ -93,9 +95,6 @@ def install():
 
 if __name__ == "__main__":
     arguments = parse_arguments()
-
-    prefix_path = Path(arguments.prefix)
-    prefix_path.mkdir(parents=True, exist_ok=True)
 
     sys.stderr.write("Downloading mecab-ko...\n")
     fetch(
@@ -106,7 +105,7 @@ if __name__ == "__main__":
     )
 
     sys.stderr.write("Building mecab-ko...\n")
-    build(prefix_path)
+    build(arguments.prefix)
 
     sys.stderr.write("Installing mecab-ko...\n")
     install()
