@@ -7,7 +7,6 @@ import time
 import urllib.request
 from pathlib import Path
 from typing import Optional
-from urllib.parse import urlparse
 
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
 CONFIG_GUESS_URL = "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
@@ -59,12 +58,9 @@ def download(url: str, filename: str):
 
 
 def fetch(url: str):
-    components = urlparse(url)
-    filename = os.path.basename(components.path)
-    download(url, filename)
+    download(url, "mecab-ko.tar.gz")
+    subprocess.run(["tar", "-xz", "--strip-components=1", "-f", "mecab-ko.tar.gz"], check=True)
 
-    subprocess.run(["tar", "-xz", "--strip-components=1",
-                   "-f", filename], check=True)
     download(CONFIG_GUESS_URL, "config.guess")
     download(CONFIG_SUB_URL, "config.sub")
 
