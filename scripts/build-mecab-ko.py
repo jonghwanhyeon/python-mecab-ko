@@ -70,7 +70,6 @@ def configure(*args):
 
 
 def make(*args):
-    print(["make", "--jobs", str(os.cpu_count()), *args])
     subprocess.run(["make", "--jobs", str(os.cpu_count()), *args], check=True)
 
 
