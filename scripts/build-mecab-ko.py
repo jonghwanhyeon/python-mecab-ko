@@ -70,7 +70,7 @@ def configure(*args):
 
 
 def make(*args):
-    subprocess.run(["make", "--jobs", str(os.cpu_count()), *args], check=True)
+    subprocess.run(["make", *args], check=True)
 
 
 if __name__ == "__main__":
@@ -90,6 +90,6 @@ if __name__ == "__main__":
               "--enable-utf8-only")
 
     if platform.system() == "Darwin":
-        make('CXXFLAGS=-O3 -Wall -arch arm64 -arch x86_64')
+        make("--jobs", str(os.cpu_count()), 'CXXFLAGS=-O3 -Wall -arch arm64 -arch x86_64')
     else:
-        make()
+        make("--jobs", str(os.cpu_count()))
