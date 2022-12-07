@@ -77,7 +77,7 @@ def fetch(url: str):
 
 
 def build(prefix: Optional[str] = None):
-    configure_options = ["--with-pic", "--enable-utf8-only"]
+    configure_options = ["--enable-utf8-only"]
     if prefix is not None:
         configure_options.append(f"--prefix={prefix}")
     configure(*configure_options)
