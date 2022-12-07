@@ -70,14 +70,13 @@ class MeCabExtension(Pybind11Extension):
 
     def _install_mecab(self):
         setup_path = Path(__file__).parent.absolute()
-        scripts_path = setup_path / "scripts"
-        install_script_path = scripts_path / "install-mecab-ko.py"
+        script_path = setup_path / "scripts" / "install-mecab-ko.py"
 
         with TemporaryDirectory() as working_directory:
             subprocess.run(
                 [
                     sys.executable,
-                    str(install_script_path),
+                    str(script_path),
                     "--prefix",
                     str(guess_prefix()),
                 ],
