@@ -18,13 +18,13 @@ def _create_lattice(sentence: str) -> _mecab.Lattice:
 
 class Feature(NamedTuple):
     pos: str
-    semantic: Optional[str]
-    has_jongseong: Optional[bool]
-    reading: Optional[str]
-    type: Optional[str]
-    start_pos: Optional[str]
-    end_pos: Optional[str]
-    exprssion: Optional[str]
+    semantic: Optional[str] = None
+    has_jongseong: Optional[bool] = None
+    reading: Optional[str] = None
+    type: Optional[str] = None
+    start_pos: Optional[str] = None
+    end_pos: Optional[str] = None
+    exprssion: Optional[str] = None
 
     @classmethod
     def _from_node(cls, node: _mecab.Node) -> Feature:
