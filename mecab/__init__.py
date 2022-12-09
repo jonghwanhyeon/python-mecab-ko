@@ -1,2 +1,1 @@
-from .mecab import MeCabError
-from .mecab import MeCab
+from .mecab import Feature, MeCab, MeCabError
