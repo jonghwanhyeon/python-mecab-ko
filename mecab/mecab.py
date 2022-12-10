@@ -59,7 +59,7 @@ class MeCabError(Exception):
 class MeCab:  # APIs are inspired by KoNLPy
     def __init__(self, dictionary_directory: Optional[str] = None):
         if dictionary_directory is None:
-            dictionary_directory = mecab_ko_dic.DICDIR
+            dictionary_directory = str(mecab_ko_dic.dictionary_path)
 
         arguments = [
             "--rcfile",

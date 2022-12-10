@@ -7,7 +7,7 @@ def test_parse(mecab: MeCab):
     assert mecab.parse("나의 꿈은 맑은 바람이 되어서") == [
         ("나", Feature(pos="NP", has_jongseong=False, reading="나")),
         ("의", Feature(pos="JKG", has_jongseong=False, reading="의")),
-        ("꿈", Feature(pos="NNG", has_jongseong=True, reading="꿈")),
+        ("꿈", Feature(pos="NNG", semantic="행위", has_jongseong=True, reading="꿈")),
         ("은", Feature(pos="JX", has_jongseong=True, reading="은")),
         ("맑", Feature(pos="VA", has_jongseong=True, reading="맑")),
         ("은", Feature(pos="ETM", has_jongseong=True, reading="은")),
@@ -35,13 +35,10 @@ def test_parse(mecab: MeCab):
         (
             "내",
             Feature(
-                pos="NP+JKG",
+                pos="MM",
+                semantic="~명사",
                 has_jongseong=False,
                 reading="내",
-                type="Inflect",
-                start_pos="NP",
-                end_pos="JKG",
-                exprssion="나/NP/*+의/JKG/*",
             ),
         ),
         ("마음", Feature(pos="NNG", has_jongseong=True, reading="마음")),
