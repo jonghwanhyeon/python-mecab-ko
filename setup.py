@@ -5,7 +5,6 @@ import subprocess
 import sys
 from glob import glob
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Optional
 
 from pybind11.setup_helpers import Pybind11Extension
@@ -17,25 +16,6 @@ prefix_paths = [
     Path(site.getuserbase()),
     Path.home() / ".local",
 ]
-
-
-def is_writable(path: Path) -> bool:
-    # If path is not directory, find closest parent direcotry
-    while not path.is_dir():
-        parent = path.parent
-        if path == parent:
-            break
-        path = parent
-
-    return os.access(path, os.W_OK)
-
-
-def guess_prefix() -> Path:
-    for path in prefix_paths:
-        if is_writable(path):
-            return path.absolute()
-
-    raise RuntimeError("All prefix candidates are not writable")
 
 
 class Executable:
@@ -62,7 +42,15 @@ class build_ext(_build_ext):
         if extension.name == "_mecab":
             mecab_config = Executable("mecab-config")
             if not mecab_config.exists():
-                self._install_mecab()
+                sys.stderr.write("==================================================\n")
+                sys.stderr.write("You need mecab-ko to build the extension.\n")
+                sys.stderr.write("Please install mecab-ko as follows:\n")
+                sys.stderr.write(
+                    "$ wget https://raw.githubusercontent.com/jonghwanhyeon/python-mecab-ko/main/scripts/install_mecab_ko.py\n"
+                )
+                sys.stderr.write("$ python3 install_mecab_ko.py\n")
+                sys.stderr.write("==================================================\n")
+                raise RuntimeError("mecab-ko not found")
 
             extension.include_dirs.append(mecab_config("--inc-dir"))
             extension.library_dirs.append(mecab_config("--libs-only-L"))
@@ -70,21 +58,6 @@ class build_ext(_build_ext):
 
         super().build_extension(extension)
 
-    def _install_mecab(self):
-        setup_path = Path(__file__).parent.absolute()
-        script_path = setup_path / "scripts" / "install-mecab-ko.py"
-
-        with TemporaryDirectory() as working_directory:
-            subprocess.run(
-                [
-                    sys.executable,
-                    str(script_path),
-                    "--prefix",
-                    str(guess_prefix()),
-                ],
-                cwd=working_directory,
-                check=True,
-            )
 
 setup(
     cmdclass={"build_ext": build_ext},

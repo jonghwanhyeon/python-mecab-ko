@@ -7,6 +7,9 @@ import time
 import urllib.request
 from typing import Optional
 
+from contextlib import contextmanager
+from tempfile import TemporaryDirectory
+
 MECAB_KO_URL = "https://bitbucket.org/eunjeon/mecab-ko/downloads/mecab-{mecab_version}-ko-{mecab_ko_version}.tar.gz"
 CONFIG_GUESS_URL = "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
 CONFIG_SUB_URL = (
@@ -21,6 +24,16 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--mecab_ko_version", default="0.9.2")
 
     return parser.parse_args()
+
+
+@contextmanager
+def change_directory(directory):
+    original = os.path.abspath(os.getcwd())
+
+    os.chdir(directory)
+    yield
+
+    os.chdir(original)
 
 
 def download(url: str, filename: str):
@@ -96,16 +109,18 @@ def install():
 if __name__ == "__main__":
     arguments = parse_arguments()
 
-    sys.stderr.write("Downloading mecab-ko...\n")
-    fetch(
-        MECAB_KO_URL.format(
-            mecab_version=arguments.mecab_version,
-            mecab_ko_version=arguments.mecab_ko_version,
-        )
-    )
+    with TemporaryDirectory() as directory:
+        with change_directory(directory):
+            sys.stderr.write("Downloading mecab-ko...\n")
+            fetch(
+                MECAB_KO_URL.format(
+                    mecab_version=arguments.mecab_version,
+                    mecab_ko_version=arguments.mecab_ko_version,
+                )
+            )
 
-    sys.stderr.write("Building mecab-ko...\n")
-    build(arguments.prefix)
+            sys.stderr.write("Building mecab-ko...\n")
+            build(arguments.prefix)
 
-    sys.stderr.write("Installing mecab-ko...\n")
-    install()
+            sys.stderr.write("Installing mecab-ko...\n")
+            install()
