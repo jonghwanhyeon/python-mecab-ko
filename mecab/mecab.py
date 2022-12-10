@@ -67,7 +67,6 @@ class MeCab:  # APIs are inspired by KoNLPy
             "--dicdir",
             dictionary_directory,
         ]
-
         self.tagger = _mecab.Tagger(arguments)
 
     def parse(self, sentence: str) -> List[Tuple[str, Feature]]:
