@@ -5,7 +5,7 @@ from typing import List, NamedTuple, Optional, Tuple
 
 import _mecab
 
-mecabrc_path = Path(__file__).parent / "mecabrc"
+mecabrc_path = Path(__file__).absolute().parent / "mecabrc"
 
 
 def _create_lattice(sentence: str) -> _mecab.Lattice:
