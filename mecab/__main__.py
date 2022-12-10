@@ -7,7 +7,7 @@ import _mecab
 from mecab import mecabrc_path
 
 rcfile_argument = ["--rcfile", str(mecabrc_path)]
-dicdir_argument = ["--dicdir", mecab_ko_dic.DICDIR]
+dicdir_argument = ["--dicdir", str(mecab_ko_dic.dictionary_path)]
 
 
 def parse_arguments() -> Tuple[Optional[str], List[str]]:

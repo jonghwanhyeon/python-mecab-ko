@@ -1,1 +1,1 @@
-mecab-ko-dic
+python-mecab-ko-dic
