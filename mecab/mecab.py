@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, NamedTuple, Optional, Tuple
-
+from typing import List, NamedTuple, Optional, Tuple, Union
+import os
 import mecab_ko_dic
 
 import _mecab
@@ -57,15 +57,30 @@ class MeCabError(Exception):
 
 
 class MeCab:  # APIs are inspired by KoNLPy
-    def __init__(self, dictionary_directory: Optional[str] = None):
-        if dictionary_directory is None:
-            dictionary_directory = str(mecab_ko_dic.dictionary_path)
+    def __init__(
+        self,
+        dictionary_path: Optional[os.PathLike] = None,
+        user_dictionay_path: Optional[Union[os.PathLike, List[os.PathLike]]] = None,
+    ):
+        if dictionary_path is None:
+            dictionary_path = str(mecab_ko_dic.dictionary_path)
+
+        user_dictionay_argument = []
+        if user_dictionay_path is not None:
+            if not isinstance(user_dictionay_path, list):
+                user_dictionay_path = [user_dictionay_path]
+
+            user_dictionay_argument = [
+                "--userdic",
+                ",".join(f'"{path}"' for path in user_dictionay_path),
+            ]
 
         arguments = [
             "--rcfile",
             str(mecabrc_path),
             "--dicdir",
-            dictionary_directory,
+            dictionary_path,
+            *user_dictionay_argument,
         ]
         self._tagger = _mecab.Tagger(arguments)
 
