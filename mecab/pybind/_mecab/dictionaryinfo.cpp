@@ -9,7 +9,7 @@ void initialize_dictionaryinfo(py::module &m) {
   m.attr("MECAB_USR_DIC") = 1;
   m.attr("MECAB_UNK_DIC") = 2;
 
-  // https://taku910.github.io/mecab/doxygen/structmecab__dictionary__info__t.html
+  // Reference: https://taku910.github.io/mecab/doxygen/structmecab__dictionary__info__t.html
   py::class_<MeCab::DictionaryInfo>(m, "DictionaryInfo")
       .def_readonly("filename", &MeCab::DictionaryInfo::filename)
       .def_readonly("charset", &MeCab::DictionaryInfo::charset)
