@@ -67,12 +67,12 @@ class MeCab:  # APIs are inspired by KoNLPy
             "--dicdir",
             dictionary_directory,
         ]
-        self.tagger = _mecab.Tagger(arguments)
+        self._tagger = _mecab.Tagger(arguments)
 
     def parse(self, sentence: str) -> List[Tuple[str, Feature]]:
         lattice = _create_lattice(sentence)
-        if not self.tagger.parse(lattice):
-            raise MeCabError(self.tagger.what())
+        if not self._tagger.parse(lattice):
+            raise MeCabError(self._tagger.what())
 
         return [(node.surface, Feature._from_node(node)) for node in lattice]
 
