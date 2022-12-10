@@ -8,9 +8,11 @@ Using `pip`:
 $ pip install python-mecab-ko
 ```
 
-This library currently provides a binary wheel on Linux and macOS platforms. If you are using other platforms, you need the following prerequisites to build from source:
+This library currently provides binary wheels on Linux and macOS platforms. If you are using other platforms, you need the following prerequisites to build from source:
 - C++14 compatible compiler
 - Python header files
+- `mecab-ko`
+  - This repository provides a convenience script at  `scripts/install_mecab_ko.py` to install `mecab-ko`
 
 
 ## Usage
@@ -51,6 +53,14 @@ mecab.parse('즐거운 하루 보내세요!')
 #         expression=None))
 # ]
 ```
+
+### CLI
+This library also provides several command-line interfaces:
+- `python3 -m mecab`
+- `python3 -m mecab dict-index`
+- `python3 -m mecab dict-gen`
+- `python3 -m mecab cost-train`
+
 
 ## Acknowledgments
 - APIs are inspired by [`KoNLPy`](https://github.com/konlpy/konlpy/)
