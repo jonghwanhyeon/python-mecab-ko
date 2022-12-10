@@ -4,7 +4,8 @@
 
 #include <mecab.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+
+#include "utils.h"
 
 namespace py = pybind11;
 
@@ -12,12 +13,8 @@ void initialize_tagger(py::module &m) {
   // Reference: https://taku910.github.io/mecab/doxygen/classMeCab_1_1Tagger.html
   py::class_<MeCab::Tagger>(m, "Tagger")
       .def(py::init([](const std::vector<std::string> &arguments) {
-        std::vector<const char *> argv{""}; // argv[0] is excutable name
-        for (const auto &argument : arguments) {
-          argv.push_back(argument.c_str());
-        }
-
-        MeCab::Tagger *tagger = MeCab::Tagger::create(argv.size(), const_cast<char **>(argv.data()));
+        std::vector<char *> argv = to_argv(arguments);
+        MeCab::Tagger *tagger = MeCab::Tagger::create(argv.size(), argv.data());
         if (tagger == nullptr) {
           throw pybind11::value_error(MeCab::getLastError());
         }
