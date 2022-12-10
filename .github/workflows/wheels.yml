@@ -34,6 +34,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.11.3
         env:
+          CIBW_BEFORE_BUILD: "{package}/scripts/cibw_before_build.sh {package}"
           CIBW_BUILD: "cp3*"
           CIBW_SKIP: "*-musllinux*"
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
