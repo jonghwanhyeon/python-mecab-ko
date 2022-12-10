@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List, NamedTuple, Optional, Tuple
 
+import mecab_ko_dic
+
 import _mecab
 
 mecabrc_path = Path(__file__).absolute().parent / "mecabrc"
@@ -57,14 +59,7 @@ class MeCabError(Exception):
 class MeCab:  # APIs are inspired by KoNLPy
     def __init__(self, dictionary_directory: Optional[str] = None):
         if dictionary_directory is None:
-            try:
-                import mecab_ko_dic
-
-                dictionary_directory = mecab_ko_dic.DICDIR
-            except ImportError:
-                raise MeCabError(
-                    "`mecab_ko_dic` not found. Please run `pip install mecab_ko_dic`"
-                )
+            dictionary_directory = mecab_ko_dic.DICDIR
 
         arguments = [
             "--rcfile",
