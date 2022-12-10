@@ -5,7 +5,7 @@ from typing import List, NamedTuple, Optional, Tuple
 
 import _mecab
 
-_mecabrc_path = Path(__file__).parent / "mecabrc"
+mecabrc_path = Path(__file__).parent / "mecabrc"
 
 
 def _create_lattice(sentence: str) -> _mecab.Lattice:
@@ -68,7 +68,7 @@ class MeCab:  # APIs are inspired by KoNLPy
 
         arguments = [
             "--rcfile",
-            str(_mecabrc_path),
+            str(mecabrc_path),
             "--dicdir",
             dictionary_directory,
         ]
