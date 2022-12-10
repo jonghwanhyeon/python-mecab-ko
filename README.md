@@ -61,6 +61,29 @@ This library also provides several command-line interfaces:
 - `python3 -m mecab dict-gen`
 - `python3 -m mecab cost-train`
 
+### User Dictionary
+You can build a user dictionary using the above command-line interface:
+```bash
+$ python3 -m mecab dict-index \
+    --model=$(python3 -c "import mecab_ko_dic; print(mecab_ko_dic.model_path)") \
+    --userdic=user.dic \
+    user.csv
+```
+> **NOTE**
+> - The CSV file must be in the following format:
+>   - `<surface>,,,,<pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>`
+> - Example:
+>   - `트위치,,,,NNP,*,F,트위치,*,*,*,*`
+>   - `플랫폼,,,,NNG,*,T,플랫폼,*,*,*,*`
+
+Then, you can use the built dictionary as follows:
+```python
+from mecab import MeCab
+mecab = MeCab(user_dictionary_path="user.dic")
+
+# If there are multiple dictionaries,
+mecab = MeCab(user_dictionary_path=["nnp.dic", "nng.dic"])
+```
 
 ## Acknowledgments
 - APIs are inspired by [`KoNLPy`](https://github.com/konlpy/konlpy/)
