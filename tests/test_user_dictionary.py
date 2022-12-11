@@ -1,10 +1,32 @@
 import subprocess
+import uuid
 from pathlib import Path
+from typing import List, NamedTuple, Optional
 
 import mecab_ko_dic
 import pytest
 
-from mecab import MeCab
+from mecab import Feature, MeCab
+
+
+class Word(NamedTuple):
+    surface: str
+    feature: Feature
+    # Lower cost has higher priority
+    cost: Optional[int] = None
+
+    def __str__(self):
+        # Format:
+        # <surface>,*,*,<cost>,<pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
+        return ",".join(
+            [
+                self.surface,
+                "",  # left context id
+                "",  # right context id
+                str(self.cost) if self.cost is not None else "",
+                str(self.feature),
+            ]
+        )
 
 
 def number_of_dictionaries(mecab: MeCab):
@@ -18,14 +40,16 @@ def number_of_dictionaries(mecab: MeCab):
     return count
 
 
-def build_user_dictionary(
-    user_dictionary_path: Path, surface: str, pos, has_jongseong: bool
-) -> Path:
-    user_dictionary_path.write_text(
-        f"{surface},,,,{pos},*,{str(has_jongseong)[0]},{surface},*,*,*,*"
-    )
+def build_user_dictionary(words: List[Word], output_path: Path) -> Path:
+    csv_path = output_path / f"{uuid.uuid4()}.csv"
+    dictionary_path = csv_path.with_suffix(".dic")
 
-    built_user_dictionary_path = user_dictionary_path.with_suffix(".dic")
+    # First, create user dictionary from words as CSV format
+    with open(csv_path, "w") as output_file:
+        for word in words:
+            print(str(word), file=output_file)
+
+    # Then, build user dictionary to output_path
     subprocess.run(
         [
             "python3",
@@ -35,25 +59,32 @@ def build_user_dictionary(
             "--model",
             str(mecab_ko_dic.model_path),
             "--userdic",
-            str(built_user_dictionary_path),
-            str(user_dictionary_path),
-        ]
+            str(dictionary_path),
+            csv_path,
+        ],
+        check=True,
     )
 
-    return built_user_dictionary_path
+    return dictionary_path
 
 
 @pytest.fixture
 def twitch_user_dictionary_path(tmp_path: Path):
     return build_user_dictionary(
-        tmp_path / "twitch.csv", "트위치", pos="NNP", has_jongseong=False
+        [
+            Word("트위치", Feature(pos="NNP", has_jongseong=False)),
+        ],
+        tmp_path,
     )
 
 
 @pytest.fixture
 def platform_user_dictionary_path(tmp_path: Path):
     return build_user_dictionary(
-        tmp_path / "platform.csv", "플랫폼", pos="NNG", has_jongseong=True
+        [
+            Word("플랫폼", Feature(pos="NNG", has_jongseong=True)),
+        ],
+        tmp_path,
     )
 
 

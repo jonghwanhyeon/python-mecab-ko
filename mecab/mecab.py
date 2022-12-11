@@ -52,6 +52,15 @@ class Feature(NamedTuple):
 
         return cls(**feature)
 
+    def __str__(self) -> str:
+        feature = {
+            key: value if value is not None else "*"
+            for key, value in self._asdict().items()
+        }
+        # True -> T / False -> F / * -> *
+        feature["has_jongseong"] = str(feature["has_jongseong"])[0]
+        return ",".join(feature.values())
+
 
 class MeCabError(Exception):
     pass
