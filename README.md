@@ -71,7 +71,7 @@ $ python3 -m mecab dict-index \
 ```
 > **NOTE**
 > - The CSV file must be in the following format:
->   - `<surface>,,,,<pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>`
+>   - `<surface>,*,*,<cost>,<pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>`
 > - Example:
 >   - `트위치,,,,NNP,*,F,트위치,*,*,*,*`
 >   - `플랫폼,,,,NNG,*,T,플랫폼,*,*,*,*`
@@ -84,6 +84,8 @@ mecab = MeCab(user_dictionary_path="user.dic")
 # If there are multiple dictionaries,
 mecab = MeCab(user_dictionary_path=["nnp.dic", "nng.dic"])
 ```
+
+Fore more detailed information, please refer to `examples/user_dictionary`.
 
 ## Acknowledgments
 - APIs are inspired by [`KoNLPy`](https://github.com/konlpy/konlpy/)
