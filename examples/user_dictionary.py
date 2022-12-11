@@ -48,7 +48,7 @@ def build_user_dictionary(words: List[Word], output_path: Path) -> Path:
             "dict-index",
             "--userdic",
             str(dictionary_path),
-            csv_path,
+            str(csv_path),
         ],
         check=True,
     )
