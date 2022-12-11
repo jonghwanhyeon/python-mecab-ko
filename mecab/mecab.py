@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import List, NamedTuple, Optional, Tuple, Union
-import os
+
 import mecab_ko_dic
 
 import _mecab
