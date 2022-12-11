@@ -84,7 +84,7 @@ mecab = MeCab(user_dictionary_path="user.dic")
 mecab = MeCab(user_dictionary_path=["nnp.dic", "nng.dic"])
 ```
 
-Fore more detailed information, please refer to `examples/user_dictionary`.
+Fore more detailed information, please refer to [`examples/user_dictionary.py`](https://github.com/jonghwanhyeon/python-mecab-ko/tree/main/examples/user_dictionary.py).
 
 ## Acknowledgments
 - APIs are inspired by [`KoNLPy`](https://github.com/konlpy/konlpy/)
