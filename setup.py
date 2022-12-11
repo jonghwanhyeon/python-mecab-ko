@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 import site
 import subprocess
@@ -10,6 +11,8 @@ from typing import Optional
 from pybind11.setup_helpers import Pybind11Extension
 from pybind11.setup_helpers import build_ext as _build_ext
 from setuptools import setup
+
+is_windows = (platform.system() == "Windows")
 
 prefix_paths = [
     Path(sys.prefix),
@@ -37,7 +40,7 @@ class Executable:
         return shutil.which(self._command, path=os.pathsep.join(paths))
 
 
-class build_ext(_build_ext):
+class unix_build_ext(_build_ext):
     def build_extension(self, extension):
         if extension.name == "_mecab":
             mecab_config = Executable("mecab-config")
@@ -59,8 +62,20 @@ class build_ext(_build_ext):
         super().build_extension(extension)
 
 
+class windows_ext(_build_ext):
+    def build_extension(self, extension):
+        if extension.name == "_mecab":
+            extension.include_dirs.append(r"C:\mecab")
+            extension.library_dirs.append(r"C:\mecab")
+            extension.libraries.append("libmecab")
+
+        super().build_extension(extension)
+
+
 setup(
-    cmdclass={"build_ext": build_ext},
+    cmdclass={
+        "build_ext": unix_build_ext if not is_windows else windows_ext
+    },
     ext_modules=[
         Pybind11Extension(
             name="_mecab",

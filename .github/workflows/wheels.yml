@@ -39,6 +39,41 @@ jobs:
         with:
           path: ./wheelhouse/*.whl
 
+  build_windows_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    env:
+      MECAB_PATH: "C:\\mecab"
+    strategy:
+      matrix:
+        os: [windows-2019]
+        arch: [
+          {cibw: x86, target: x86},
+          {cibw: AMD64, target: x64},
+        ]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Installing mecab-ko
+        run: |
+          curl --location --output "libmecab-ko.zip" "https://github.com/jonghwanhyeon/mecab-ko/releases/download/0.996-ko-0.9.2/libmecab-0.996-ko-0.9.2-windows-${{ matrix.arch.target }}.zip"
+          unzip "libmecab-ko.zip" -d "${MECAB_PATH}"
+        shell: bash
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.11.3
+        env:
+          CIBW_ARCHS: "${{ matrix.arch.cibw }}"
+          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path ${{ env.MECAB_PATH }} -w {dest_dir} {wheel}"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
@@ -53,7 +88,7 @@ jobs:
           path: dist/*.tar.gz
 
   upload_pypi:
-    needs: [build_wheels, build_sdist]
+    needs: [build_wheels, build_windows_wheels, build_sdist]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
