@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import uuid
 from pathlib import Path
 from typing import List, NamedTuple, Optional
@@ -51,7 +52,7 @@ def build_user_dictionary(words: List[Word], output_path: Path) -> Path:
     # Then, build user dictionary to output_path
     subprocess.run(
         [
-            "python3",
+            sys.executable,
             "-m",
             "mecab",
             "dict-index",
