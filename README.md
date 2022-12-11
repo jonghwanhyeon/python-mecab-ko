@@ -55,7 +55,7 @@ mecab.parse('즐거운 하루 보내세요!')
 ```
 
 ### CLI
-This library also provides several command-line interfaces:
+The library also provides a proxy for several command-line interfaces provided by mecab. These interfaces can be used to add vocabulary to a user dictonary.
 - `python3 -m mecab`
 - `python3 -m mecab dict-index`
 - `python3 -m mecab dict-gen`
@@ -75,12 +75,12 @@ $ python3 -m mecab dict-index \
 >   - `트위치,,,,NNP,*,F,트위치,*,*,*,*`
 >   - `플랫폼,,,,NNG,*,T,플랫폼,*,*,*,*`
 
-Then, you can use the built dictionary as follows:
+Then, you can add the built user dictionary as follows:
 ```python
 from mecab import MeCab
 mecab = MeCab(user_dictionary_path="user.dic")
 
-# If there are multiple dictionaries,
+# If there are multiple dictionaries:
 mecab = MeCab(user_dictionary_path=["nnp.dic", "nng.dic"])
 ```
 
