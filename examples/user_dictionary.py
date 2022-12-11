@@ -15,7 +15,7 @@ class Word(NamedTuple):
 
     def __str__(self):
         # Format:
-        # <surface>,*,*,<cost>,<pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
+        # <surface>,<left_context_id>,<right_context_id>,<cost>,<pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
         return ",".join(
             [
                 self.surface,

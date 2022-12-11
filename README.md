@@ -70,7 +70,7 @@ $ python3 -m mecab dict-index \
 ```
 > **NOTE**
 > - The CSV file must be in the following format:
->   - `<surface>,*,*,<cost>,<pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>`
+>   - `<surface>,<left_context_id>,<right_context_id>,<cost>,<pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>`
 > - Example:
 >   - `트위치,,,,NNP,*,F,트위치,*,*,*,*`
 >   - `플랫폼,,,,NNG,*,T,플랫폼,*,*,*,*`
