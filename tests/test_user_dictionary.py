@@ -3,7 +3,6 @@ import uuid
 from pathlib import Path
 from typing import List, NamedTuple, Optional
 
-import mecab_ko_dic
 import pytest
 
 from mecab import Feature, MeCab
@@ -56,8 +55,6 @@ def build_user_dictionary(words: List[Word], output_path: Path) -> Path:
             "-m",
             "mecab",
             "dict-index",
-            "--model",
-            str(mecab_ko_dic.model_path),
             "--userdic",
             str(dictionary_path),
             csv_path,

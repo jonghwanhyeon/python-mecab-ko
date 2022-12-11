@@ -65,7 +65,6 @@ This library also provides several command-line interfaces:
 You can build a user dictionary using the above command-line interface:
 ```bash
 $ python3 -m mecab dict-index \
-    --model=$(python3 -c "import mecab_ko_dic; print(mecab_ko_dic.model_path)") \
     --userdic=user.dic \
     user.csv
 ```

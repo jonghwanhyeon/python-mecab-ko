@@ -8,7 +8,7 @@ from mecab import mecabrc_path
 
 rcfile_argument = ["--rcfile", str(mecabrc_path)]
 dicdir_argument = ["--dicdir", str(mecab_ko_dic.dictionary_path)]
-
+model_argument = ["--model", str(mecab_ko_dic.model_path)]
 
 def parse_arguments() -> Tuple[Optional[str], List[str]]:
     arguments = sys.argv[1:]
@@ -23,11 +23,11 @@ def parse_arguments() -> Tuple[Optional[str], List[str]]:
 
 
 def mecab_dict_index(arguments: List[str]) -> int:
-    return _mecab.cli.dict_index([*dicdir_argument, *arguments])
+    return _mecab.cli.dict_index([*dicdir_argument, *model_argument, *arguments])
 
 
 def mecab_dict_gen(arguments: List[str]) -> int:
-    return _mecab.cli.dict_gen([*dicdir_argument, *arguments])
+    return _mecab.cli.dict_gen([*dicdir_argument, *model_argument, *arguments])
 
 
 def mecab_cost_train(arguments: List[str]) -> int:
