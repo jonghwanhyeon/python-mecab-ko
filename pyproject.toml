@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 build = "cp*"
 skip = "*-musllinux*"
 
-before-build = "{package}/scripts/cibw_before_build.sh {package}"
+before-build = "bash {package}/scripts/cibw_before_build.sh {package}"
 build-verbosity = "1"
 
 test-requires = "pytest"

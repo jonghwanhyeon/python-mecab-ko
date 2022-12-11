@@ -47,28 +47,20 @@ jobs:
     strategy:
       matrix:
         os: [windows-2019]
-        arch: [
-          {cibw: x86, target: x86},
-          {cibw: AMD64, target: x64},
-        ]
+        arch: [x86, AMD64]
 
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Installing mecab-ko
-        run: |
-          curl --location --output "libmecab-ko.zip" "https://github.com/jonghwanhyeon/mecab-ko/releases/download/0.996-ko-0.9.2/libmecab-0.996-ko-0.9.2-windows-${{ matrix.arch.target }}.zip"
-          unzip "libmecab-ko.zip" -d "${MECAB_PATH}"
-        shell: bash
-
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.11.3
         env:
-          CIBW_ARCHS: "${{ matrix.arch.cibw }}"
-          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path ${{ env.MECAB_PATH }} -w {dest_dir} {wheel}"
+          CIBW_ARCHS: ${{ matrix.arch }}
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            pip install delvewheel &&
+            delvewheel repair --add-path ${{ env.MECAB_PATH }} -w {dest_dir} {wheel}
 
       - uses: actions/upload-artifact@v3
         with:
