@@ -61,7 +61,7 @@ The library also provides a proxy for several command-line interfaces provided b
 - `python3 -m mecab dict-gen`
 - `python3 -m mecab cost-train`
 
-### User Dictionary
+## User Dictionary
 You can build a user dictionary using the above command-line interface:
 ```bash
 $ python3 -m mecab dict-index \
