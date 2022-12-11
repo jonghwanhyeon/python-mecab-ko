@@ -45,7 +45,7 @@ def build_user_dictionary(words: List[Word], output_path: Path) -> Path:
     dictionary_path = csv_path.with_suffix(".dic")
 
     # First, create user dictionary from words as CSV format
-    with open(csv_path, "w") as output_file:
+    with open(csv_path, "w", encoding="utf-8") as output_file:
         for word in words:
             print(str(word), file=output_file)
 
