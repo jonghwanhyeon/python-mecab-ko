@@ -17,3 +17,6 @@ test-skip = "*-*linux_aarch64"
 
 [tool.cibuildwheel.macos]
 test-skip = "*-macosx_arm64 *-macosx_universal2:arm64"
+
+[tool.cibuildwheel.windows]
+test-skip = "*-win_arm64"

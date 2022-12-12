@@ -18,6 +18,8 @@ windows_install_mecab() {
         architecture="x86"
     elif [[ $CIBW_ARCHS == "AMD64" ]]; then
         architecture="x64"
+    elif [[ $CIBW_ARCHS == "ARM64" ]]; then
+        architecture="arm64"
     fi
 
     curl \
