@@ -13,7 +13,7 @@ test-requires = "pytest"
 test-command = "pytest {project}/tests"
 
 [tool.cibuildwheel.linux]
-test-skip = "*_aarch64"
+test-skip = "*-*linux_aarch64"
 
 [tool.cibuildwheel.macos]
-test-skip = "*_arm64 *_universal2:arm64"
+test-skip = "*-macosx_arm64 *-macosx_universal2:arm64"
