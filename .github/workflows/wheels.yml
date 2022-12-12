@@ -59,8 +59,12 @@ jobs:
         env:
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
-            pip install delvewheel &&
-            delvewheel repair --add-path ${{ env.MECAB_PATH }} -w {dest_dir} {wheel}
+            python scripts/repair_wheel_windows.py
+            --verbose
+            --architecture=${{ matrix.arch }}
+            --add-path=${{ env.MECAB_PATH }}
+            --wheel-dir {dest_dir}
+            {wheel}
 
       - uses: actions/upload-artifact@v3
         with:
