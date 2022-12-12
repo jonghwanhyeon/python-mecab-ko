@@ -5,15 +5,15 @@ set -ex
 PROJECT="$1"
 PLATFORM=$(python -c "import platform; print(platform.system())")
 
-prepare_linux() {
+linux_install_mecab() {
     python ${PROJECT}/scripts/install_mecab_ko.py
 }
 
-prepare_darwin() {
+darwin_install_mecab() {
     sudo python ${PROJECT}/scripts/install_mecab_ko.py
 }
 
-prepare_windows() {
+windows_install_mecab() {
     if [[ $CIBW_ARCHS == "x86" ]]; then
         architecture="x86"
     elif [[ $CIBW_ARCHS == "AMD64" ]]; then
@@ -28,9 +28,9 @@ prepare_windows() {
 }
 
 if [[ $PLATFORM == "Linux" ]]; then
-    prepare_linux
+    linux_install_mecab
 elif [[ $PLATFORM == "Darwin" ]]; then
-    prepare_darwin
+    darwin_install_mecab
 elif [[ $PLATFORM == "Windows" ]]; then
-    prepare_windows
+    windows_install_mecab
 fi
