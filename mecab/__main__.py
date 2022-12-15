@@ -10,6 +10,7 @@ rcfile_argument = ["--rcfile", str(mecabrc_path)]
 dicdir_argument = ["--dicdir", str(mecab_ko_dic.dictionary_path)]
 model_argument = ["--model", str(mecab_ko_dic.model_path)]
 
+
 def parse_arguments() -> Tuple[Optional[str], List[str]]:
     arguments = sys.argv[1:]
     if not arguments:

@@ -18,6 +18,7 @@ This library currently provides binary wheels on Linux, macOS and Windows platfo
 ## Usage
 ```python
 import mecab
+
 mecab = mecab.MeCab()
 
 mecab.morphs('영등포구청역에 있는 맛집 좀 알려주세요.')
@@ -78,6 +79,7 @@ $ python3 -m mecab dict-index \
 Then, you can add the built user dictionary as follows:
 ```python
 from mecab import MeCab
+
 mecab = MeCab(user_dictionary_path="user.dic")
 
 # If there are multiple dictionaries:

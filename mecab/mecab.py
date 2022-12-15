@@ -40,10 +40,7 @@ class Feature(NamedTuple):
         values = node.feature.split(",")
         assert len(values) == 8
 
-        feature = {
-            field: value if value != "*" else None
-            for field, value in zip(Feature._fields, values)
-        }
+        feature = {field: value if value != "*" else None for field, value in zip(Feature._fields, values)}
 
         if feature["has_jongseong"] == "T":
             feature["has_jongseong"] = True
@@ -53,10 +50,7 @@ class Feature(NamedTuple):
         return cls(**feature)
 
     def __str__(self) -> str:
-        feature = {
-            key: value if value is not None else "*"
-            for key, value in self._asdict().items()
-        }
+        feature = {key: value if value is not None else "*" for key, value in self._asdict().items()}
         # True -> T / False -> F / * -> *
         feature["has_jongseong"] = str(feature["has_jongseong"])[0]
         return ",".join(feature.values())
@@ -108,8 +102,4 @@ class MeCab:  # APIs are inspired by KoNLPy
         return [surface for surface, _ in self.parse(sentence)]
 
     def nouns(self, sentence: str) -> List[str]:
-        return [
-            surface
-            for surface, feature in self.parse(sentence)
-            if feature.pos.startswith("N")
-        ]
+        return [surface for surface, feature in self.parse(sentence) if feature.pos.startswith("N")]

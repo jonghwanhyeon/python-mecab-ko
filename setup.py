@@ -12,7 +12,7 @@ from pybind11.setup_helpers import Pybind11Extension
 from pybind11.setup_helpers import build_ext as _build_ext
 from setuptools import setup
 
-is_windows = (platform.system() == "Windows")
+is_windows = platform.system() == "Windows"
 
 prefix_paths = [
     Path(sys.prefix),
@@ -26,9 +26,7 @@ class Executable:
         self._command = command
 
     def __call__(self, *args) -> str:
-        return subprocess.check_output(
-            [self.executable, *args], encoding="utf-8"
-        ).strip()
+        return subprocess.check_output([self.executable, *args], encoding="utf-8").strip()
 
     def exists(self) -> bool:
         return self.executable is not None
@@ -73,9 +71,7 @@ class windows_ext(_build_ext):
 
 
 setup(
-    cmdclass={
-        "build_ext": unix_build_ext if not is_windows else windows_ext
-    },
+    cmdclass={"build_ext": unix_build_ext if not is_windows else windows_ext},
     ext_modules=[
         Pybind11Extension(
             name="_mecab",

@@ -72,30 +72,43 @@ def main():
         print("# Using vanilla MeCab...")
         mecab = MeCab()
         mecab_pos(mecab, "트위치는 양방향 생방송 플랫폼입니다")
+        # Input: 트위치는 양방향 생방송 플랫폼입니다
+        # Output:
+        # 트      NNG,*,F,트,*,*,*,*
+        # 위치    NNG,*,F,위치,*,*,*,*
+        # 는      JX,*,T,는,*,*,*,*
+        # 양방향  NNG,*,T,양방향,Compound,*,*,양/NNG/*+방향/NNG/*
+        # 생방송  NNG,*,T,생방송,Compound,*,*,생/NNG/*+방송/NNG/*
+        # 플랫    NNG,*,T,플랫,*,*,*,*
+        # 폼      NNG,*,T,폼,*,*,*,*
+        # 입니다  VCP+EC,*,F,입니다,Inflect,VCP,EC,이/VCP/*+ᄇ니다/EC/*
         print()
 
         print("# Using MeCab with single user dictionary...")
         twitch_user_dictionary_path = build_user_dictionary(
-            [
-                Word("트위치", Feature(pos="NNP", has_jongseong=False)),
-            ],
+            [Word("트위치", Feature(pos="NNP", has_jongseong=False))],
             working_path,
         )
         mecab = MeCab(user_dictionay_path=twitch_user_dictionary_path)
         mecab_pos(mecab, "트위치는 양방향 생방송 플랫폼입니다")
+        # Input: 트위치는 양방향 생방송 플랫폼입니다
+        # Output:
+        # 트위치  NNP,*,F,*,*,*,*,*
+        # 는      JX,*,T,는,*,*,*,*
+        # 양방향  NNG,*,T,양방향,Compound,*,*,양/NNG/*+방향/NNG/*
+        # 생방송  NNG,*,T,생방송,Compound,*,*,생/NNG/*+방송/NNG/*
+        # 플랫    NNG,*,T,플랫,*,*,*,*
+        # 폼      NNG,*,T,폼,*,*,*,*
+        # 입니다  VCP+EC,*,F,입니다,Inflect,VCP,EC,이/VCP/*+ᄇ니다/EC/*
         print()
 
         print("# Using MeCab with multiple user dictionaries...")
         twitch_user_dictionary_path = build_user_dictionary(
-            [
-                Word("트위치", Feature(pos="NNP", has_jongseong=False)),
-            ],
+            [Word("트위치", Feature(pos="NNP", has_jongseong=False))],
             working_path,
         )
         platform_user_dictionary_path = build_user_dictionary(
-            [
-                Word("플랫폼", Feature(pos="NNG", has_jongseong=True)),
-            ],
+            [Word("플랫폼", Feature(pos="NNG", has_jongseong=True))],
             working_path,
         )
         mecab = MeCab(
@@ -105,18 +118,31 @@ def main():
             ]
         )
         mecab_pos(mecab, "트위치는 양방향 생방송 플랫폼입니다")
+        # Input: 트위치는 양방향 생방송 플랫폼입니다
+        # Output:
+        # 트위치  NNP,*,F,*,*,*,*,*
+        # 는      JX,*,T,는,*,*,*,*
+        # 양방향  NNG,*,T,양방향,Compound,*,*,양/NNG/*+방향/NNG/*
+        # 생방송  NNG,*,T,생방송,Compound,*,*,생/NNG/*+방송/NNG/*
+        # 플랫폼  NNG,*,T,*,*,*,*,*
+        # 입니다  VCP+EC,*,F,입니다,Inflect,VCP,EC,이/VCP/*+ᄇ니다/EC/*
         print()
 
         print("# Using MeCab with single user dictionary with multiple words...")
         twitch_and_platform_user_dictionary_path = build_user_dictionary(
-            [
-                Word("트위치", Feature(pos="NNP", has_jongseong=False)),
-                Word("플랫폼", Feature(pos="NNG", has_jongseong=True)),
-            ],
+            [Word("트위치", Feature(pos="NNP", has_jongseong=False)), Word("플랫폼", Feature(pos="NNG", has_jongseong=True))],
             working_path,
         )
         mecab = MeCab(user_dictionay_path=[twitch_and_platform_user_dictionary_path])
         mecab_pos(mecab, "트위치는 양방향 생방송 플랫폼입니다")
+        # Input: 트위치는 양방향 생방송 플랫폼입니다
+        # Output:
+        # 트위치  NNP,*,F,*,*,*,*,*
+        # 는      JX,*,T,는,*,*,*,*
+        # 양방향  NNG,*,T,양방향,Compound,*,*,양/NNG/*+방향/NNG/*
+        # 생방송  NNG,*,T,생방송,Compound,*,*,생/NNG/*+방송/NNG/*
+        # 플랫폼  NNG,*,T,*,*,*,*,*
+        # 입니다  VCP+EC,*,F,입니다,Inflect,VCP,EC,이/VCP/*+ᄇ니다/EC/*
         print()
 
 

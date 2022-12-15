@@ -112,9 +112,7 @@ def test_single_user_dictionary(mecab: MeCab, twitch_user_dictionary_path: Path)
     ]
 
 
-def test_multiple_user_dictionary(
-    mecab: MeCab, twitch_user_dictionary_path: Path, platform_user_dictionary_path: Path
-):
+def test_multiple_user_dictionary(mecab: MeCab, twitch_user_dictionary_path: Path, platform_user_dictionary_path: Path):
     assert number_of_dictionaries(mecab) == 1
     assert mecab.pos("트위치는 양방향 생방송 플랫폼입니다") == [
         ("트", "NNG"),
@@ -127,9 +125,7 @@ def test_multiple_user_dictionary(
         ("입니다", "VCP+EC"),
     ]
 
-    mecab_with_user_dictionary = MeCab(
-        user_dictionay_path=[twitch_user_dictionary_path, platform_user_dictionary_path]
-    )
+    mecab_with_user_dictionary = MeCab(user_dictionay_path=[twitch_user_dictionary_path, platform_user_dictionary_path])
     assert number_of_dictionaries(mecab_with_user_dictionary) == 3
     assert mecab_with_user_dictionary.pos("트위치는 양방향 생방송 플랫폼입니다") == [
         ("트위치", "NNP"),
