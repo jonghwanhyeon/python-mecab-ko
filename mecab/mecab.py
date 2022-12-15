@@ -1,22 +1,17 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import List, NamedTuple, Optional, Tuple, Union
 
 import mecab_ko_dic
 
 import _mecab
+from mecab.utils import create_lattice, ensure_list, to_csv
+
+PathLike = Union[str, Path]
 
 mecabrc_path = Path(__file__).absolute().parent / "mecabrc"
-
-
-def _create_lattice(sentence: str) -> _mecab.Lattice:
-    lattice = _mecab.Lattice()
-    lattice.add_request_type(_mecab.MECAB_ALLOCATE_SENTENCE)  # Required
-    lattice.set_sentence(sentence)
-
-    return lattice
+_rcfile_option = ["--rcfile", str(mecabrc_path)]
 
 
 class Feature(NamedTuple):
@@ -63,33 +58,26 @@ class MeCabError(Exception):
 class MeCab:  # APIs are inspired by KoNLPy
     def __init__(
         self,
-        dictionary_path: Optional[os.PathLike] = None,
-        user_dictionay_path: Optional[Union[os.PathLike, List[os.PathLike]]] = None,
+        dictionary_path: Optional[PathLike] = None,
+        user_dictionay_path: Optional[Union[PathLike, List[PathLike]]] = None,
     ):
         if dictionary_path is None:
-            dictionary_path = str(mecab_ko_dic.dictionary_path)
+            dictionary_path = mecab_ko_dic.dictionary_path
 
-        user_dictionay_argument = []
-        if user_dictionay_path is not None:
-            if not isinstance(user_dictionay_path, list):
-                user_dictionay_path = [user_dictionay_path]
+        user_dictionay_path = ensure_list(user_dictionay_path)
 
-            user_dictionay_argument = [
-                "--userdic",
-                ",".join(f'"{path}"' for path in user_dictionay_path),
-            ]
+        dictionary_option = ["--dicdir", str(dictionary_path)]
+        user_dictionay_option = ["--userdic", to_csv(user_dictionay_path)] if user_dictionay_path else []
 
-        arguments = [
-            "--rcfile",
-            str(mecabrc_path),
-            "--dicdir",
-            dictionary_path,
-            *user_dictionay_argument,
+        options = [
+            *_rcfile_option,
+            *dictionary_option,
+            *user_dictionay_option,
         ]
-        self._tagger = _mecab.Tagger(arguments)
+        self._tagger = _mecab.Tagger(options)
 
     def parse(self, sentence: str) -> List[Tuple[str, Feature]]:
-        lattice = _create_lattice(sentence)
+        lattice = create_lattice(sentence)
         if not self._tagger.parse(lattice):
             raise MeCabError(self._tagger.what())
 
