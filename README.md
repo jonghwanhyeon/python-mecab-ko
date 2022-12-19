@@ -66,7 +66,7 @@ The library also provides a proxy for several command-line interfaces provided b
 You can build a user dictionary using the above command-line interface:
 ```bash
 $ python3 -m mecab dict-index \
-    --userdic=user.dic \
+    --userdic user.dic \
     user.csv
 ```
 > **NOTE**
