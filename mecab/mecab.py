@@ -28,17 +28,16 @@ class Feature(NamedTuple):
     start_pos: Optional[str] = None
     end_pos: Optional[str] = None
     exprssion: Optional[str] = None
-    span: Optional[Span] = None
 
     @classmethod
-    def _from_node(cls, span: Tuple[int, int], node: _mecab.Node) -> Feature:
+    def _from_feature(cls, feature: str) -> Feature:
         # Reference:
         # - http://taku910.github.io/mecab/learn.html
         # - https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY
         # - https://bitbucket.org/eunjeon/mecab-ko-dic/src/master/utils/dictionary/lexicon.py
 
         # feature = <pos>,<semantic>,<has_jongseong>,<reading>,<type>,<start_pos>,<end_pos>,<expression>
-        values = node.feature.split(",")
+        values = feature.split(",")
         assert len(values) == 8
 
         feature = {field: value if value != "*" else None for field, value in zip(Feature._fields, values)}
@@ -48,15 +47,28 @@ class Feature(NamedTuple):
         elif feature["has_jongseong"] == "F":
             feature["has_jongseong"] = False
 
-        return cls(**feature, span=Span(*span))
+        return cls(**feature)
 
     def __str__(self) -> str:
         feature = {key: value if value is not None else "*" for key, value in self._asdict().items()}
-        del feature["span"]  # mecab feature does not include span
 
         # True -> T / False -> F / * -> *
         feature["has_jongseong"] = str(feature["has_jongseong"])[0]
         return ",".join(feature.values())
+
+
+class Morpheme(NamedTuple):
+    span: Span
+    surface: str
+    feature: Feature
+
+    @property
+    def pos(self) -> str:
+        return self.feature.pos
+
+    @classmethod
+    def _from_node(cls, span: Tuple[int, int], node: _mecab.Node) -> Morpheme:
+        return cls(surface=node.surface, feature=Feature._from_feature(node.feature), span=Span(*span))
 
 
 class MeCabError(Exception):
@@ -84,18 +96,18 @@ class MeCab:  # APIs are inspired by KoNLPy
         ]
         self._tagger = _mecab.Tagger(options)
 
-    def parse(self, sentence: str) -> List[Tuple[str, Feature]]:
+    def parse(self, sentence: str) -> List[Morpheme]:
         lattice = create_lattice(sentence)
         if not self._tagger.parse(lattice):
             raise MeCabError(self._tagger.what())
 
-        return [(node.surface, Feature._from_node(span, node)) for span, node in lattice]
+        return [Morpheme._from_node(span, node) for span, node in lattice]
 
     def pos(self, sentence: str) -> List[Tuple[str, str]]:
-        return [(surface, feature.pos) for surface, feature in self.parse(sentence)]
+        return [(morpheme.surface, morpheme.pos) for morpheme in self.parse(sentence)]
 
     def morphs(self, sentence: str) -> List[str]:
-        return [surface for surface, _ in self.parse(sentence)]
+        return [morpheme.surface for morpheme in self.parse(sentence)]
 
     def nouns(self, sentence: str) -> List[str]:
-        return [surface for surface, feature in self.parse(sentence) if feature.pos.startswith("N")]
+        return [morpheme.surface for morpheme in self.parse(sentence) if morpheme.pos.startswith("N")]
