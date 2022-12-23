@@ -14,6 +14,11 @@ mecabrc_path = Path(__file__).absolute().parent / "mecabrc"
 _rcfile_option = ["--rcfile", str(mecabrc_path)]
 
 
+class Span(NamedTuple):
+    start: int
+    end: int
+
+
 class Feature(NamedTuple):
     pos: str
     semantic: Optional[str] = None
@@ -23,9 +28,10 @@ class Feature(NamedTuple):
     start_pos: Optional[str] = None
     end_pos: Optional[str] = None
     exprssion: Optional[str] = None
+    span: Optional[Span] = None
 
     @classmethod
-    def _from_node(cls, node: _mecab.Node) -> Feature:
+    def _from_node(cls, span: Tuple[int, int], node: _mecab.Node) -> Feature:
         # Reference:
         # - http://taku910.github.io/mecab/learn.html
         # - https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY
@@ -42,10 +48,12 @@ class Feature(NamedTuple):
         elif feature["has_jongseong"] == "F":
             feature["has_jongseong"] = False
 
-        return cls(**feature)
+        return cls(**feature, span=Span(*span))
 
     def __str__(self) -> str:
         feature = {key: value if value is not None else "*" for key, value in self._asdict().items()}
+        del feature["span"]  # mecab feature does not include span
+
         # True -> T / False -> F / * -> *
         feature["has_jongseong"] = str(feature["has_jongseong"])[0]
         return ",".join(feature.values())
@@ -81,7 +89,7 @@ class MeCab:  # APIs are inspired by KoNLPy
         if not self._tagger.parse(lattice):
             raise MeCabError(self._tagger.what())
 
-        return [(node.surface, Feature._from_node(node)) for node in lattice]
+        return [(node.surface, Feature._from_node(span, node)) for span, node in lattice]
 
     def pos(self, sentence: str) -> List[Tuple[str, str]]:
         return [(surface, feature.pos) for surface, feature in self.parse(sentence)]
