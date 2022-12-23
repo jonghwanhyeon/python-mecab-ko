@@ -7,18 +7,29 @@
 
 namespace py = pybind11;
 
+typedef std::tuple<size_t, size_t> Span;
+
 class Iterator {
 private:
   const MeCab::Node *cursor;
+  const char *sentence;
 
 public:
-  explicit Iterator(const MeCab::Node *cursor) : cursor(cursor) {}
+  explicit Iterator(const MeCab::Node *cursor) : cursor(cursor), sentence(cursor->surface) {}
 
-  const MeCab::Node &operator*() const { return *cursor; }
+  const std::tuple<const Span, const MeCab::Node &> operator*() const {
+    size_t offset = cursor->surface - sentence;
+
+    return std::make_tuple(
+        Span{utf8_strlen(sentence, sentence + offset), utf8_strlen(sentence, sentence + offset + cursor->length)},
+        std::cref(*cursor));
+  }
+
   Iterator &operator++() {
     cursor = cursor->next;
     return *this;
   }
+
   bool operator==(const Iterator &rhs) const { return cursor == rhs.cursor; }
 };
 
