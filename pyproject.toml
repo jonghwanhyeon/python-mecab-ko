@@ -9,7 +9,7 @@ skip = "*-musllinux*"
 before-build = "bash scripts/cibw_before_build.sh {package}"
 build-verbosity = "1"
 
-test-requires = "pytest"
+test-requires = ["pytest", "psutil"]
 test-command = "pytest {project}/tests"
 
 [tool.cibuildwheel.linux]
