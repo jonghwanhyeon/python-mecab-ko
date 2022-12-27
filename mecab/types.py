@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from enum import Enum
+from pathlib import Path
 from typing import NamedTuple, Optional
 
 import _mecab
@@ -9,8 +11,8 @@ class Span(NamedTuple):
     """Represents a span of the morpheme
 
     Attributes:
-        start (int): A start index of the morpheme
-        end (int): An end index of the morpheme
+        start: A start index of the morpheme
+        end: An end index of the morpheme
     """
 
     start: int
@@ -22,14 +24,14 @@ class Feature(NamedTuple):
        [https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY](https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY)
 
     Attributes:
-        pos (str): A part-of-speech tag of the morpheme
-        semantic (Optional[str], optional): A semantic category of the morpheme
-        has_jongseong (Optional[bool], optional): Whether the last syllable of `reading` has jongseong or not
-        reading (Optional[str], optional): A reading of the morpheme
-        type (Optional[str], optional): A type of the morpheme (`Inflect`, `Compound`, `Preanalysis`, or `None`)
-        start_pos (Optional[str], optional): A first part-of-speech tag of the morpheme
-        end_pos (Optional[str], optional): A last part-of-speech tag of the morpheme
-        exprssion (Optional[str], optional): An expression of the morpheme
+        pos: A part-of-speech tag of the morpheme
+        semantic: A semantic category of the morpheme
+        has_jongseong: Whether the last syllable of `reading` has jongseong or not
+        reading: A reading of the morpheme
+        type: A type of the morpheme (`Inflect`, `Compound`, `Preanalysis`, or `None`)
+        start_pos: A first part-of-speech tag of the morpheme
+        end_pos: A last part-of-speech tag of the morpheme
+        exprssion: An expression of the morpheme
     """
 
     pos: str
@@ -73,9 +75,9 @@ class Morpheme(NamedTuple):
     """Represents a morpheme
 
     Attributes:
-        span (Span): A span of the morpheme
-        surface (str): A surface of the morpheme
-        feature (Feature): A feature of the morpheme
+        span: A span of the morpheme
+        surface: A surface of the morpheme
+        feature: A feature of the morpheme
     """
 
     span: Span
@@ -90,3 +92,41 @@ class Morpheme(NamedTuple):
     @classmethod
     def _from_node(cls, span: tuple[int, int], node: _mecab.Node) -> Morpheme:
         return cls(surface=node.surface, feature=Feature._from_feature(node.feature), span=Span(*span))
+
+
+class Dictionary(NamedTuple):
+    """Represents a dictionary information
+
+    Attributes:
+        path: A path to the dictionary
+        number_of_words: The number of words in the dictionary
+        type: A type of the dictionary
+        version: A version of the dictionary
+    """
+
+    class Type(Enum):
+        SYSTEM = _mecab.MECAB_SYS_DIC
+        USER = _mecab.MECAB_USR_DIC
+        UNNOWN = _mecab.MECAB_UNK_DIC
+
+    path: Path
+    number_of_words: int
+    type: Type
+    version: int
+
+    @classmethod
+    def _from_dictionary_info(cls, dictionary_info: _mecab.dictionary_info) -> list[Dictionary]:
+        list_of_dictionary = []
+
+        while dictionary_info is not None:
+            list_of_dictionary.append(
+                cls(
+                    path=Path(dictionary_info.filename),
+                    number_of_words=dictionary_info.size,
+                    type=cls.Type(dictionary_info.type),
+                    version=dictionary_info.version,
+                )
+            )
+            dictionary_info = dictionary_info.next
+
+        return list_of_dictionary
