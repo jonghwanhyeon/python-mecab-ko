@@ -1,0 +1,44 @@
+site_name: python-mecab-ko
+site_description: A python binding for mecab-ko
+site_author: Jonghwan Hyeon
+
+repo_url: https://github.com/jonghwanhyeon/python-mecab-ko
+repo_name: jonghwanhyeon/python-mecab-ko
+
+nav:
+  - Overview: index.md
+  - install.md
+  - Usage:
+    - usage/basic.md
+    - usage/advanced.md
+    - usage/cli.md
+  - api.md
+
+theme:
+  name: material
+  icon:
+    logo: material/form-textbox
+    repo: fontawesome/brands/github
+  features:
+    - content.code.annotate
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            members_order: source
+            show_bases: false
+            show_source: false
