@@ -25,20 +25,20 @@ class MeCab:  # APIs are inspired by KoNLPy
     def __init__(
         self,
         dictionary_path: Optional[PathLike] = None,
-        user_dictionay_path: Optional[Union[PathLike, list[PathLike]]] = None,
+        user_dictionary_path: Optional[Union[PathLike, list[PathLike]]] = None,
     ):
         """
         Parameters:
-            dictionary_path: Dictionary path for MeCab. If `dictionary_path` is None, `mecab-ko-dic` is used.
-            user_dictionay_path: User dictionary paths for MeCab. Defaults to None.
+            dictionary_path: System dictionary path to use. If `dictionary_path` is None, `mecab-ko-dic.dictionary_path` is used.
+            user_dictionary_path: User dictionary paths to use. Defaults to None.
         """
         if dictionary_path is None:
             dictionary_path = mecab_ko_dic.dictionary_path
 
-        user_dictionay_path = ensure_list(user_dictionay_path)
+        user_dictionary_path = ensure_list(user_dictionary_path)
 
         dictionary_option = ["--dicdir", str(dictionary_path)]
-        user_dictionay_option = ["--userdic", to_csv(user_dictionay_path)] if user_dictionay_path else []
+        user_dictionay_option = ["--userdic", to_csv(user_dictionary_path)] if user_dictionary_path else []
 
         options = [
             *_rcfile_option,
