@@ -100,6 +100,6 @@ class MeCab:  # APIs are inspired by KoNLPy
         """Returns currently loaded dictionaries
 
         Returns:
-            a list of loaded `Dictionary`
+            A list of loaded `Dictionary`
         """
         return Dictionary._from_dictionary_info(self._tagger.dictionary_info())
