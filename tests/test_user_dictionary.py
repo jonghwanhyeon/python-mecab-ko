@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import subprocess
 import sys
 import uuid
 from pathlib import Path
-from typing import List, NamedTuple, Optional
+from typing import NamedTuple, Optional
 
 import pytest
 
@@ -29,7 +31,7 @@ class Morpheme(NamedTuple):
         )
 
 
-def build_user_dictionary(morphemes: List[Morpheme], output_path: Path) -> Path:
+def build_user_dictionary(morphemes: list[Morpheme], output_path: Path) -> Path:
     csv_path = output_path / f"{uuid.uuid4()}.csv"
     dictionary_path = csv_path.with_suffix(".dic")
 

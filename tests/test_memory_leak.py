@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import gc
 import os
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 
 import psutil
 
@@ -37,12 +38,12 @@ def trace_memory_usage():
     memory_usage.end = process.memory_info().rss
 
 
-def readlines(path: Path) -> List[str]:
+def readlines(path: Path) -> list[str]:
     lines = path.read_text(encoding="utf-8").strip()
     return lines.splitlines()
 
 
-def parse_corpus(corpus_path: Path) -> List[Morpheme]:
+def parse_corpus(corpus_path: Path) -> list[Morpheme]:
     mecab = MeCab()  # Create a MeCab instance each time.
 
     morphemes = []
