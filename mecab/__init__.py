@@ -1,4 +1,5 @@
-from .mecab import Feature, MeCab, MeCabError, Morpheme, Span, mecabrc_path
+from .mecab import MeCab, MeCabError, mecabrc_path
+from .types import Feature, Morpheme, Span
 
 __version__ = "1.3.0"
 
