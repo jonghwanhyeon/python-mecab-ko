@@ -9,8 +9,8 @@
 To use these APIs, you need to make a MeCab instance first.
 
 ```pycon
->>> import mecab
->>> mecab = mecab.MeCab()
+>>> from mecab import MeCab
+>>> mecab = MeCab()
 ```
 
 To extract morphemes in a given sentence, use [`mecab.morphs()`][mecab.MeCab.morphs]:
