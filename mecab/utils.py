@@ -1,4 +1,6 @@
-from typing import Any, List
+from __future__ import annotations
+
+from typing import Any
 
 import _mecab
 
@@ -11,7 +13,7 @@ def create_lattice(sentence: str) -> _mecab.Lattice:
     return lattice
 
 
-def ensure_list(value: Any) -> List[Any]:
+def ensure_list(value: Any) -> list[Any]:
     if value is None:
         return []
 
@@ -21,5 +23,5 @@ def ensure_list(value: Any) -> List[Any]:
     return value
 
 
-def to_csv(items: List[Any]) -> str:
+def to_csv(items: list[Any]) -> str:
     return ",".join(f'"{item}"' for item in items)

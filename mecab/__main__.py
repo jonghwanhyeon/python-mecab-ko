@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import mecab_ko_dic
 
@@ -11,7 +13,7 @@ _dicdir_option = ["--dicdir", str(mecab_ko_dic.dictionary_path)]
 _model_option = ["--model", str(mecab_ko_dic.model_path)]
 
 
-def parse_arguments() -> Tuple[Optional[str], List[str]]:
+def parse_arguments() -> tuple[Optional[str], list[str]]:
     arguments = sys.argv[1:]
     if not arguments:
         return None, []
@@ -23,19 +25,19 @@ def parse_arguments() -> Tuple[Optional[str], List[str]]:
     return None, arguments
 
 
-def mecab_dict_index(arguments: List[str]) -> int:
+def mecab_dict_index(arguments: list[str]) -> int:
     return _mecab.cli.dict_index([*_dicdir_option, *_model_option, *arguments])
 
 
-def mecab_dict_gen(arguments: List[str]) -> int:
+def mecab_dict_gen(arguments: list[str]) -> int:
     return _mecab.cli.dict_gen([*_dicdir_option, *_model_option, *arguments])
 
 
-def mecab_cost_train(arguments: List[str]) -> int:
+def mecab_cost_train(arguments: list[str]) -> int:
     return _mecab.cli.cost_train([*_dicdir_option, *arguments])
 
 
-def mecab(arguments: List[str]) -> int:
+def mecab(arguments: list[str]) -> int:
     return _mecab.cli.mecab([*_rcfile_option, *_dicdir_option, *arguments])
 
 

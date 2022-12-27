@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, NamedTuple, Optional, Tuple, Union
+from typing import NamedTuple, Optional, Union
 
 import mecab_ko_dic
 
@@ -97,7 +97,7 @@ class Morpheme(NamedTuple):
         return self.feature.pos
 
     @classmethod
-    def _from_node(cls, span: Tuple[int, int], node: _mecab.Node) -> Morpheme:
+    def _from_node(cls, span: tuple[int, int], node: _mecab.Node) -> Morpheme:
         return cls(surface=node.surface, feature=Feature._from_feature(node.feature), span=Span(*span))
 
 
@@ -111,12 +111,12 @@ class MeCab:  # APIs are inspired by KoNLPy
     def __init__(
         self,
         dictionary_path: Optional[PathLike] = None,
-        user_dictionay_path: Optional[Union[PathLike, List[PathLike]]] = None,
+        user_dictionay_path: Optional[Union[PathLike, list[PathLike]]] = None,
     ):
         """
         Args:
             dictionary_path (Optional[PathLike], optional): Dictionary path for MeCab. If `dictionary_path` is None, `mecab-ko-dic` is used.
-            user_dictionay_path (Optional[Union[PathLike, List[PathLike]]], optional): User dictionary paths for MeCab. Defaults to None.
+            user_dictionay_path (Optional[Union[PathLike, list[PathLike]]], optional): User dictionary paths for MeCab. Defaults to None.
         """
         if dictionary_path is None:
             dictionary_path = mecab_ko_dic.dictionary_path
@@ -133,14 +133,14 @@ class MeCab:  # APIs are inspired by KoNLPy
         ]
         self._tagger = _mecab.Tagger(options)
 
-    def parse(self, sentence: str) -> List[Morpheme]:
+    def parse(self, sentence: str) -> list[Morpheme]:
         """Performs a morpheme analysis on a given sentence and returns a list of `Morpheme` which contains detailed information about each morpheme
 
         Args:
             sentence (str): A sentence to analyze
 
         Returns:
-            List[Morpheme]: A list of `Morpheme` in a given sentence
+            list[Morpheme]: A list of `Morpheme` in a given sentence
         """
         lattice = create_lattice(sentence)
         if not self._tagger.parse(lattice):
@@ -148,35 +148,35 @@ class MeCab:  # APIs are inspired by KoNLPy
 
         return [Morpheme._from_node(span, node) for span, node in lattice]
 
-    def pos(self, sentence: str) -> List[Tuple[str, str]]:
+    def pos(self, sentence: str) -> list[tuple[str, str]]:
         """Extracts `(surface, part-of-speech tag)` pairs in a given sentence
 
         Args:
             sentence (str): A sentence to analyze
 
         Returns:
-            List[Tuple[str, str]]: A list of `(surface, part-of-speech tag)` pair in a given sentence
+            list[Tuple[str, str]]: A list of `(surface, part-of-speech tag)` pair in a given sentence
         """
         return [(morpheme.surface, morpheme.pos) for morpheme in self.parse(sentence)]
 
-    def morphs(self, sentence: str) -> List[str]:
+    def morphs(self, sentence: str) -> list[str]:
         """Extracts morphemes in a given sentence
 
         Args:
             sentence (str): A sentence to analyze
 
         Returns:
-            List[str]: A list of morphemes in a given sentence
+            list[str]: A list of morphemes in a given sentence
         """
         return [morpheme.surface for morpheme in self.parse(sentence)]
 
-    def nouns(self, sentence: str) -> List[str]:
+    def nouns(self, sentence: str) -> list[str]:
         """Extracts nouns in a given sentence
 
         Args:
             sentence (str): A sentence to analyze
 
         Returns:
-            List[str]:  A list of nouns in a given sentence
+            list[str]:  A list of nouns in a given sentence
         """
         return [morpheme.surface for morpheme in self.parse(sentence) if morpheme.pos.startswith("N")]
