@@ -9,4 +9,3 @@
         - Feature
         - Dictionary
         - MeCabError
-      group_by_category: false

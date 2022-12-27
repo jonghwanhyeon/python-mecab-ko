@@ -11,6 +11,8 @@ nav:
   - Usage:
     - usage/basic.md
     - usage/advanced.md
+    - usage/dictionary.md
+    - usage/custom-vocabulary.md
     - usage/cli.md
   - api.md
 
@@ -40,5 +42,9 @@ plugins:
         python:
           options:
             members_order: source
+            group_by_category: false
             show_bases: false
             show_source: false
+
+watch:
+  - mecab
