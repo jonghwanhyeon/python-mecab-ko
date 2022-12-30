@@ -21,7 +21,7 @@ To create a user dictionary, you first need to create a CSV file in the followin
     For more information about each column, please refer to [https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY/edit#gid=1718487366](https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY/edit#gid=1718487366).
 
 
-For example, if you would like to add `트위치` as `NNP` (proper noun) and `플랫폼` as `NNG` (common noun), you can write a CSV file like this:
+For example, if you would like to add `트위치` as a proper noun (`NNP`) and `플랫폼` as a common noun (`NNG`), you can write a CSV file like this:
 
 ```csv title="nouns.csv"
 트위치,,,,NNP,*,F,트위치,*,*,*,*
@@ -47,7 +47,7 @@ Now, the user dictionary is successfully compiled and ready to use. To use the u
 [('트위치', 'NNP'), ('는', 'JX'), ('양방향', 'NNG'), ('생방송', 'NNG'), ('플랫폼', 'NNG'), ('입니다', 'VCP+EF'), ('.', 'SF')]
 ```
 
-As shown, the nouns `트위치` and `플랫폼` are no longer separated into morphemes.
+As you can see, the nouns `트위치` and `플랫폼` are now correctly identified as proper and common nouns, respectively.
 
 
 !!! note

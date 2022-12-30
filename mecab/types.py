@@ -8,7 +8,7 @@ import _mecab
 
 
 class Span(NamedTuple):
-    """Represents a span of the morpheme
+    """Represents a span of the morpheme in a text.
 
     Attributes:
         start: A start index of the morpheme
@@ -20,7 +20,7 @@ class Span(NamedTuple):
 
 
 class Feature(NamedTuple):
-    """Represents a feature of the morpheme. For more information, please refer to
+    """Represents a feature of the morpheme. For more information, please refer to the link:
        [https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY](https://docs.google.com/spreadsheets/d/1-9blXKjtjeKZqsf4NzHeYJCrr49-nXeRF6D80udfcwY)
 
     Attributes:
@@ -29,8 +29,8 @@ class Feature(NamedTuple):
         has_jongseong: Whether the last syllable of `reading` has jongseong or not
         reading: A reading of the morpheme
         type: A type of the morpheme (`Inflect`, `Compound`, `Preanalysis`, or `None`)
-        start_pos: A first part-of-speech tag of the morpheme
-        end_pos: A last part-of-speech tag of the morpheme
+        start_pos: The first part-of-speech tag of the morpheme
+        end_pos: The last part-of-speech tag of the morpheme
         expression: An expression of the morpheme
     """
 
@@ -75,7 +75,7 @@ class Morpheme(NamedTuple):
     """Represents a morpheme
 
     Attributes:
-        span: A span of the morpheme
+        span: A span of the morpheme in a text
         surface: A surface of the morpheme
         feature: A feature of the morpheme
     """
@@ -86,7 +86,7 @@ class Morpheme(NamedTuple):
 
     @property
     def pos(self) -> str:
-        """Returns a part-of-speech tag of the morpheme"""
+        """Returns the part-of-speech tag of the morpheme"""
         return self.feature.pos
 
     @classmethod

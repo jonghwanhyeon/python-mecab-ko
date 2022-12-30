@@ -29,8 +29,8 @@ class MeCab:  # APIs are inspired by KoNLPy
     ):
         """
         Parameters:
-            dictionary_path: System dictionary path to use. If `dictionary_path` is None, `mecab-ko-dic.dictionary_path` is used.
-            user_dictionary_path: User dictionary paths to use. Defaults to None.
+            dictionary_path: Path to the system dictionary to use. If not provided, the default mecab-ko-dic dictionary will be used.
+            user_dictionary_path: Path or list of paths to user dictionaries to use. If not provided, no user dictionaries will be used.
         """
         if dictionary_path is None:
             dictionary_path = mecab_ko_dic.dictionary_path
@@ -48,13 +48,13 @@ class MeCab:  # APIs are inspired by KoNLPy
         self._tagger = _mecab.Tagger(options)
 
     def parse(self, sentence: str) -> list[Morpheme]:
-        """Performs a morpheme analysis on a given sentence and returns a list of `Morpheme` which contains detailed information about each morpheme
+        """Perform morpheme analysis on a given sentence.
 
         Parameters:
             sentence: A sentence to analyze
 
         Returns:
-            A list of `Morpheme` in a given sentence
+            A list of `Morpheme` objects representing each morpheme in the given sentence.
         """
         lattice = create_lattice(sentence)
         if not self._tagger.parse(lattice):
@@ -63,43 +63,43 @@ class MeCab:  # APIs are inspired by KoNLPy
         return [Morpheme._from_node(span, node) for span, node in lattice]
 
     def pos(self, sentence: str) -> list[tuple[str, str]]:
-        """Extracts `(surface, part-of-speech tag)` pairs in a given sentence
+        """Extract `(surface, part-of-speech tag)` pairs from a given sentence.
 
         Parameters:
             sentence: A sentence to analyze
 
         Returns:
-            A list of `(surface, part-of-speech tag)` pair in a given sentence
+            A list of `(surface, part-of-speech tag)` pairs representing each morpheme in the given sentence.
         """
         return [(morpheme.surface, morpheme.pos) for morpheme in self.parse(sentence)]
 
     def morphs(self, sentence: str) -> list[str]:
-        """Extracts morphemes in a given sentence
+        """Extract morphemes from a given sentence.
 
         Parameters:
             sentence: A sentence to analyze
 
         Returns:
-            A list of morphemes in a given sentence
+            A list of morphemes in the given sentence.
         """
         return [morpheme.surface for morpheme in self.parse(sentence)]
 
     def nouns(self, sentence: str) -> list[str]:
-        """Extracts nouns in a given sentence
+        """Extract nouns from a given sentence
 
         Parameters:
             sentence: A sentence to analyze
 
         Returns:
-            A list of nouns in a given sentence
+            A list of nouns in the given sentence
         """
         return [morpheme.surface for morpheme in self.parse(sentence) if morpheme.pos.startswith("N")]
 
     @property
     def dictionary(self) -> list[Dictionary]:
-        """Returns currently loaded dictionaries
+        """Returns the currently loaded dictionaries.
 
         Returns:
-            A list of loaded `Dictionary`
+            A list of `Dictionary` objects representing the dictionaries currently loaded.
         """
         return Dictionary._from_dictionary_info(self._tagger.dictionary_info())
