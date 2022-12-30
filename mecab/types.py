@@ -31,7 +31,7 @@ class Feature(NamedTuple):
         type: A type of the morpheme (`Inflect`, `Compound`, `Preanalysis`, or `None`)
         start_pos: A first part-of-speech tag of the morpheme
         end_pos: A last part-of-speech tag of the morpheme
-        exprssion: An expression of the morpheme
+        expression: An expression of the morpheme
     """
 
     pos: str
@@ -41,7 +41,7 @@ class Feature(NamedTuple):
     type: Optional[str] = None
     start_pos: Optional[str] = None
     end_pos: Optional[str] = None
-    exprssion: Optional[str] = None
+    expression: Optional[str] = None
 
     @classmethod
     def _from_feature(cls, feature: str) -> Feature:

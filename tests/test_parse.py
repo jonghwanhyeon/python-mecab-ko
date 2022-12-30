@@ -32,7 +32,7 @@ def test_parse(mecab: MeCab):
                 type="Inflect",
                 start_pos="VV",
                 end_pos="ETM",
-                exprssion="자라/VV/*+ᆫ/ETM/*",
+                expression="자라/VV/*+ᆫ/ETM/*",
             ),
         ),
         Morpheme(
@@ -49,14 +49,14 @@ def test_parse(mecab: MeCab):
                 type="Inflect",
                 start_pos="VA",
                 end_pos="ETM",
-                exprssion="파아랗/VA/*+ᆫ/ETM/*",
+                expression="파아랗/VA/*+ᆫ/ETM/*",
             ),
         ),
         Morpheme(
             span=Span(16, 19),
             surface="하늘빛",
             feature=Feature(
-                pos="NNG", has_jongseong=True, reading="하늘빛", type="Compound", exprssion="하늘/NNG/*+빛/NNG/*"
+                pos="NNG", has_jongseong=True, reading="하늘빛", type="Compound", expression="하늘/NNG/*+빛/NNG/*"
             ),
         ),
     ]
