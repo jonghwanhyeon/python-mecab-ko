@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap');
+
+:root {
+  --md-code-font: "Roboto Mono", "Nanum Gothic Coding";
+}
+
 @media screen and (min-width: 60em) {
   .md-header__source {
     max-width: 14rem;
