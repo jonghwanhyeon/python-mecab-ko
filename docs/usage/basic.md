@@ -1,4 +1,4 @@
-# Baisc
+# Basic
 
 **python-mecab-ko** provides simple APIs inspired by [KoNLPy](https://github.com/konlpy/konlpy).
 
