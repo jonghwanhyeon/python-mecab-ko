@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.11.3
+        uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
 
@@ -55,7 +55,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.11.3
+        uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
