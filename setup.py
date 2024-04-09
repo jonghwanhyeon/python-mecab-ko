@@ -43,14 +43,6 @@ class unix_build_ext(_build_ext):
         if extension.name == "_mecab":
             mecab_config = Executable("mecab-config")
             if not mecab_config.exists():
-                sys.stderr.write("==================================================\n")
-                sys.stderr.write("You need mecab-ko to build the extension.\n")
-                sys.stderr.write("Please install mecab-ko as follows:\n")
-                sys.stderr.write(
-                    "$ wget https://raw.githubusercontent.com/jonghwanhyeon/python-mecab-ko/main/scripts/install_mecab_ko.py\n"
-                )
-                sys.stderr.write("$ python3 install_mecab_ko.py\n")
-                sys.stderr.write("==================================================\n")
                 raise RuntimeError("mecab-ko not found")
 
             extension.include_dirs.append(mecab_config("--inc-dir"))
