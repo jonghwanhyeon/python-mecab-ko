@@ -93,9 +93,6 @@ def build(prefix: Optional[str] = None):
     configure(*configure_options)
 
     build_options = ["--jobs", str(os.cpu_count())]
-    if platform.system() == "Darwin":
-        # Add -arch options to support universal binary
-        build_options.append("CXXFLAGS=-O3 -Wall -arch x86_64 -arch arm64")
     make(*build_options)
 
 
