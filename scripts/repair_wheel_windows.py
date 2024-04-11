@@ -5,8 +5,8 @@ import sys
 from pathlib import Path
 from typing import List
 
-# Reference: https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md
-VISUAL_STUDIO_PATH = r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
+# Reference: https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md
+VISUAL_STUDIO_PATH = r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
 
 
 def parse_arguments() -> argparse.Namespace:
