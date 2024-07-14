@@ -10,7 +10,7 @@ linux_install_mecab() {
 }
 
 darwin_install_mecab() {
-    sudo python ${PROJECT}/scripts/install_mecab_ko.py
+    sudo --preserve-env python ${PROJECT}/scripts/install_mecab_ko.py
 }
 
 windows_install_mecab() {
