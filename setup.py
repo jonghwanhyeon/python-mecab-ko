@@ -69,6 +69,7 @@ setup(
             name="_mecab",
             sources=sorted(glob("mecab/pybind/**/*.cpp", recursive=True)),
             include_dirs=["mecab/pybind/_mecab"],
+            cxx_std=14,
         ),
     ],
 )
